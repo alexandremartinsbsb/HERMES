@@ -1,0 +1,116 @@
+@CHARSET "utf-8";
+
+body {
+	font-weight: normal;
+	padding: 3px;
+	background: #F7F4E9 url(body.png) repeat-x top center;
+}
+
+h2 {
+	padding: 0px;
+	margin: 0px;
+	padding: 5px 5px 15px;
+	height: 40px;
+	background-color: #0B486B;
+	color: #ffffff;
+	box-shadow: 0px 4px 4px #ccc;
+	text-align: center;
+	font-size: 40px;
+	text-shadow: 5px 5px 10px white;
+}
+
+h1 {
+	padding: 0px;
+	margin: 0px;
+	padding: 8px 5px;
+	height: 30px;
+	background-color: #0B486B;
+	color: #ffffff;
+	box-shadow: 0px 4px 4px #ccc;
+	font-size: 30px;
+	color: #ffffff;
+	text-shadow: 5px 5px 10px white;
+}
+
+h5 {
+	padding: 0px;
+	margin: 0px;
+	text-align: center;
+}
+
+h6 {
+	padding: 0px;
+	margin: 0px;
+	text-align: center;
+	text-shadow: 1px 1px 4px white;
+}
+
+.cabecalho {
+	padding: 5px 0px;
+}
+
+.rodape {
+	padding: 0px 8px;
+	text-align: center;
+}
+
+.produto-tabela input {
+	width: 99%;
+}
+
+/* Customiza TabView - início */
+.ui-tabs .ui-tabs-panel {
+	padding: 0.5em 0.2em !important;
+	border-width: 1px !important;
+}
+
+.ui-tabs {
+	padding: 0px !important;
+}
+
+.ui-tabs .ui-tabs-nav {
+	margin: 0px !important;
+}
+
+.ui-tabs.ui-tabs-top>.ui-tabs-nav {
+	padding: 0px !important;
+}
+/* Customiza TabView - fim */
+.estilo-campo {
+	width: 98%;
+	-webkit-border-radius: 8px;
+	-moz-border-radius: 8px;
+	border-radius: 8px;
+}
+
+.estilo-div {
+	display: flex;
+}
+
+.menu-principal {
+	margin-right: 15px;
+}
+
+.painelPesquisa {
+	width: 100%;
+	margin-top: 20px;
+}
+
+.coluna-opcoes {
+	text-align: center;
+	width: 100px;
+}
+
+.coluna-duas-opcoes {
+	text-align: center;
+	width: 100px;
+}
+
+.botao-adicionar {
+	margin: 15px;
+}
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled {
+	color: #ffffff;
+	text-shadow: 5px 5px 10px white;
+}

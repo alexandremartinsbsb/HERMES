@@ -1,0 +1,235 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<p:cache region="cacheMenu" key="megaMenu">
+
+		<p:megaMenu id="menuPrincipal" autoDisplay="false">
+
+			<p:menuitem value="#{msg.menu_principal}" outcome="/principal" icon="fa fa-home" />
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:submenu label="#{msg.menu_comercial}">
+				<p:column>
+					<p:submenu label="Frente de Caixa">
+						<p:menuitem value="PAF-ECF + TEF" url="#" />
+						<p:menuitem value="CF-e-SAT" url="#" />
+						<p:menuitem value="NFC-e" url="#" />
+					</p:submenu>
+					<p:submenu label="Venda">
+						<p:menuitem value="Marketing" url="#" />
+						<p:menuitem value="Vendas" url="#" />
+						<p:menuitem value="Faturamento" url="#" />
+					</p:submenu>
+					<p:submenu label="Loja Virtual - B2C">
+						<p:menuitem value="Loja" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:submenu label="Ordem de Serviço">
+						<p:menuitem value="O.S" url="#" />
+					</p:submenu>
+					<p:submenu label="NF-e">
+						<p:menuitem value="Emitir" url="#" />
+						<p:menuitem value="Consultar" url="#" />
+					</p:submenu>
+					<p:submenu label="NFS-e">
+						<p:menuitem value="Emitir" url="#" />
+						<p:menuitem value="Consultar" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:submenu label="CT-e">
+						<p:menuitem value="Emitir" url="#" />
+						<p:menuitem value="Consultar" url="#" />
+					</p:submenu>
+					<p:submenu label="CRM">
+						<p:menuitem value="Colaborativo" url="#" />
+						<p:menuitem value="Analítico" url="#" />
+					</p:submenu>
+					<p:submenu label="AFV">
+						<p:menuitem value="Hitorico de Compras" url="#" />
+						<p:menuitem value="Hitorico do Transporte" url="#" />
+						<p:menuitem value="Dados da Conta" url="#" />
+						<p:menuitem value="Dados de Venda" url="#" />
+					</p:submenu>
+					<p:submenu label="Comissão">
+						<p:menuitem value="Controle" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:graphicImage library="images" name="/icones/comercioIcone.png" />
+				</p:column>
+			</p:submenu>
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:submenu label="#{msg.menu_Financeiro}">
+				<p:column>
+					<p:submenu label="Contas">
+						<p:menuitem value="Pagar" url="#" />
+						<p:menuitem value="Receber" url="#" />
+					</p:submenu>
+					<p:submenu label="Controle de Caixa">
+						<p:menuitem value="TV.2.3" url="#" />
+					</p:submenu>
+					<p:submenu label="Conciliação Bancária">
+						<p:menuitem value="TV.2.3" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:submenu label="Tesouraria">
+						<p:menuitem value="TV.4.2" url="#" />
+					</p:submenu>
+					<p:submenu label="Fluxo de Caixa">
+						<p:menuitem value="TV.5.3" url="#" />
+					</p:submenu>
+					<p:submenu label="EDI Bancário">
+						<p:menuitem value="TV.2.3" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:graphicImage library="images" name="/icones/financeiroIcone.png" />
+				</p:column>
+			</p:submenu>
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:submenu label="#{msg.menu_contabil_fiscal}">
+				<p:column>
+					<p:submenu label="Contabilidade e Conciliação Contábil">
+						<p:menuitem value="Patrimônio" url="#" />
+						<p:menuitem value="Patrimônio Líquido" url="#" />
+					</p:submenu>
+					<p:submenu label="SPED Contábil e Fiscal">
+						<p:menuitem value="TESTE" url="#" />
+						<p:menuitem value="TESTE" url="#" />
+					</p:submenu>
+					<p:submenu label="EFD-Contribuições">
+						<p:menuitem value="Patrimônio" url="#" />
+						<p:menuitem value="Patrimônio Líquido" url="#" />
+					</p:submenu>
+					<p:submenu label="Sintegra">
+						<p:menuitem value="Patrimônio" url="#" />
+						<p:menuitem value="Patrimônio Líquido" url="#" />
+					</p:submenu>
+				</p:column>
+				<p:column>
+					<p:submenu label="Escrita Fiscal">
+						<p:menuitem value="Direito Tributário" url="#" />
+					</p:submenu>
+					<p:submenu label="Controle Patrimonial">
+						<p:menuitem value="Patrimônio" url="#" />
+						<p:menuitem value="Patrimônio Líquido" url="#" />
+					</p:submenu>
+					<p:submenu label="Controle de Orçamento">
+						<p:menuitem value="Patrimônio" url="#" />
+						<p:menuitem value="Patrimônio Líquido" url="#" />
+					</p:submenu>
+					<p:submenu label="Tributação">
+						<p:menuitem value="Patrimônio" url="#" />
+						<p:menuitem value="Patrimônio Líquido" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:graphicImage library="images" name="/icones/contabilFiscalIcone.png" />
+				</p:column>
+			</p:submenu>
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:submenu label="#{msg.menu_recursos_humanos}">
+				<p:column>
+					<p:submenu label="Folha de Pagamento">
+						<p:menuitem value="TV.1.2" url="#" />
+					</p:submenu>
+					<p:submenu label="Ponto Eletrônico">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+					<p:submenu label="eSocial">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:graphicImage library="images" name="/icones/recursosHumanosIcone.png" />
+				</p:column>
+			</p:submenu>
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:submenu label="#{msg.menu_suprimento}">
+				<p:column>
+					<p:submenu label="Compras">
+						<p:menuitem value="TV.1.2" url="#" />
+					</p:submenu>
+					<p:submenu label="Estoque">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+					<p:submenu label="Contrato">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+					<p:submenu label="Inventário">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:submenu label="PCP">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+					<p:submenu label="WMS">
+						<p:menuitem value="Documento" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:graphicImage library="images" name="/icones/suprimentoIcone.png" />
+				</p:column>
+			</p:submenu>
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:submenu label="#{msg.menu_administrativo}">
+				<p:column>
+					<p:submenu label="#{msg.submenu_administrativo_cadastro}">
+						<p:menuitem value="#{msg.menuitem_administrativo_cadastro_empresa}" outcome="/empresas/pesquisaEmpresas" />
+						<p:menuitem value="#{msg.menuitem_administrativo_cadastro_filial}" outcome="/filiais/pesquisaFiliais" />
+						<p:menuitem value="#{msg.menuitem_administrativo_cadastro_usuario}" outcome="/usuarios/pesquisaUsuarios" />
+					</p:submenu>
+					<p:submenu label="#{msg.submenu_administrativo_apoio}">
+						<p:menuitem value="#{msg.menuitem_administrativo_apoio_pais}" outcome="/apoio/pais" />
+						<p:menuitem value="#{msg.menuitem_administrativo_apoio_estado}" outcome="/apoio/estado" />
+						<p:menuitem value="#{msg.menuitem_administrativo_apoio_cidade}" outcome="/apoio/cidade" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:submenu label="Gerador de Etiqueta">
+						<p:menuitem value="TV.4.1" url="#" />
+						<p:menuitem value="TV.4.2" url="#" />
+					</p:submenu>
+					<p:submenu label="Agenda">
+						<p:menuitem value="TV.5.1" url="#" />
+						<p:menuitem value="TV.5.2" url="#" />
+						<p:menuitem value="TV.5.3" url="#" />
+					</p:submenu>
+				</p:column>
+
+				<p:column>
+					<p:graphicImage library="images" name="/icones/administrativoIcone.png" />
+				</p:column>
+			</p:submenu>
+
+			<p:menuitem icon="ui-icon-grip-dotted-vertical" />
+
+			<p:menuitem value="#{msg.menu_sair}" action="#{acessarBean.sair}" icon="fa fa-sign-out" />
+		</p:megaMenu>
+	</p:cache>
+</ui:composition>

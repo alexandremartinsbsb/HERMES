@@ -1,0 +1,110 @@
+<ui:composition template="/WEB-INF/templates/layoutPadrao.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="titulo">#{empresaBean.editandoEmpresa ? msg.subtitulo_cadastro_empresa_edicao : msg.subtitulo_cadastro_empresa_novo}</ui:define>
+
+	<ui:define name="conteudo">
+		<f:metadata>
+			<o:viewParam name="empresa" value="#{empresaBean.empresa}" />
+			<f:viewAction action="#{empresaBean.inicializar}" />
+		</f:metadata>
+
+		<h:form id="frmCadastroEmpresa" enctype="multipart/form-data">
+
+			<h2>#{empresaBean.editandoEmpresa ? msg.subtitulo_cadastro_empresa_edicao : msg.subtitulo_cadastro_empresa_novo}</h2>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button value="#{msg.botao_novo}" outcome="/empresas/cadastroEmpresa" id="botaoNova" />
+					<span class="ui-separator"> <span class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+					<p:commandButton value="#{msg.botao_salvar}" id="botaoSalvar" action="#{empresaBean.salvarEmpresa}" update="@(form)" ajax="false" />
+				</f:facet>
+				<f:facet name="right">
+					<p:button value="#{msg.botao_pesquisa}" outcome="/empresas/pesquisaEmpresas" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid id="painelCadastroEmpresa" columns="3" columnClasses="ui-grid-col-2,ui-grid-col-4, ui-grid-col-1" layout="grid" styleClass="ui-panelgrid-blank">
+
+				<p:outputLabel for="codigo" value="#{msg.cadastro_empresa_codigo}" styleClass="estilo-campo" />
+				<p:inputText id="codigo" value="#{empresaBean.empresa.pk}" disabled="true" styleClass="estilo-campo" />
+				<p:spacer />
+
+				<p:outputLabel for="nomeFantasia" value="#{msg.cadastro_empresa_nome_fantasia}" styleClass="estilo-campo" />
+				<p:inputText id="nomeFantasia" value="#{empresaBean.empresa.nomeFantasia}" styleClass="estilo-campo" />
+				<p:message for="nomeFantasia" display="icon" />
+
+				<p:outputLabel for="nomeRazaoSocial" value="#{msg.cadastro_empresa_razao_social}" styleClass="estilo-campo" />
+				<p:inputText id="nomeRazaoSocial" value="#{empresaBean.empresa.razaoSocial}" styleClass="estilo-campo" />
+				<p:message for="nomeRazaoSocial" display="icon" />
+
+				<p:outputLabel for="cnpj" value="#{msg.cadastro_empresa_cnpj}" styleClass="estilo-campo" />
+				<p:inputMask id="cnpj" mask="99.999.999/9999-99" value="#{empresaBean.empresa.cnpj}" styleClass="estilo-campo" />
+				<p:message for="cnpj" display="icon" />
+
+				<p:outputLabel for="inscricaoEstadual" value="#{msg.cadastro_empresa_ie}" styleClass="estilo-campo" />
+				<p:inputText id="inscricaoEstadual" value="#{empresaBean.empresa.inscricaoEstadual}" styleClass="estilo-campo" />
+				<p:message for="inscricaoEstadual" display="icon" />
+
+				<p:outputLabel for="inscricaoMunicipal" value="#{msg.cadastro_empresa_im}" styleClass="estilo-campo" />
+				<p:inputText id="inscricaoMunicipal" value="#{empresaBean.empresa.inscricaoMunicipal}" styleClass="estilo-campo" />
+				<p:message for="inscricaoMunicipal" display="icon" />
+
+				<p:outputLabel for="crt" value="#{msg.cadastro_empresa_selectonemenu_crt}" styleClass="estilo-campo" />
+				<p:selectOneMenu id="crt" value="#{empresaBean.empresa.crt}" styleClass="estilo-campo">
+					<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+					<f:selectItems value="#{empresaBean.tiposSimplesNacional}" var="codigoCRT" itemValue="#{codigoCRT}" itemLabel="#{codigoCRT.descricao}" />
+				</p:selectOneMenu>
+				<p:tooltip for="crt" value="#{msg.cadastro_empresa_selectitem_dica_crt}" showEffect="clip" hideEffect="explode" trackMouse="true" />
+
+				<p:outputLabel for="crtIssqn" value="#{msg.cadastro_empresa_crt_issqn}" styleClass="estilo-campo" />
+				<p:selectOneMenu id="crtIssqn" value="#{empresaBean.empresa.crtIssqn}" styleClass="estilo-campo">
+					<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+					<f:selectItems value="#{empresaBean.tiposSimplesNacionalIssqn}" var="codigoCRTISSQN" itemValue="#{codigoCRTISSQN}" itemLabel="#{codigoCRTISSQN.descricao}" />
+				</p:selectOneMenu>
+				<p:message for="crtIssqn" display="icon" />
+
+				<p:outputLabel for="responsavel" value="#{msg.cadastro_empresa_responsavel}" styleClass="estilo-campo" />
+				<p:inputText id="responsavel" value="#{empresaBean.empresa.responsavel}" styleClass="estilo-campo" />
+				<p:message for="responsavel" display="icon" />
+
+				<p:outputLabel for="ramo" value="#{msg.cadastro_empresa_selectonemenu_ramo}" styleClass="estilo-campo" />
+				<p:selectOneMenu id="ramo" value="#{empresaBean.empresa.ramo}" styleClass="estilo-campo">
+					<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+					<f:selectItems value="#{empresaBean.ramo}" var="ramo" itemValue="#{ramo}" itemLabel="#{ramo.descricao}" />
+				</p:selectOneMenu>
+				<p:message for="ramo" display="icon" />
+
+				<p:outputLabel for="site" value="#{msg.cadastro_empresa_site}" styleClass="estilo-campo" />
+				<p:inputText id="site" value="#{empresaBean.empresa.site}" styleClass="estilo-campo" />
+				<p:message for="site" display="icon" />
+
+				<p:outputLabel for="logo" value="#{msg.cadastro_empresa_logo}" styleClass="estilo-campo" />
+				<p:fileUpload id="logo" mode="simple" label="#{msg.botao_carregar}" value="#{empresaBean.uploadArquivo}" />
+				<p:commandLink id="visualizarLogo" process="@this">
+					<p:outputLabel value="#{msg.link_visualizar}" />
+				</p:commandLink>
+				<p:overlayPanel id="ouverlayPanelLogo" for="visualizarLogo" hideEffect="fade">
+					<p:graphicImage url="" value="#{empresaBean.logo}" />
+				</p:overlayPanel>
+
+			</p:panelGrid>
+		</h:form>
+
+		<p:tabView style="margin-top: 10px; background-color: #ffffff; border: 0px;" id="tabViewOpcoes">
+			<p:tab title="#{msg.tabview_cadastro_empresa_tab_endereco}">
+				<ui:include src="/empresas/enderecoEmpresa.xhtml" />
+			</p:tab>
+			<p:tab title="#{msg.tabview_cadastro_empresa_tab_contato}">
+				<ui:include src="/empresas/contatoEmpresa.xhtml" />
+			</p:tab>
+			<p:tab title="#{msg.tabview_cadastro_empresa_tab_telefone}">
+				<ui:include src="/empresas/telefoneEmpresa.xhtml" />
+			</p:tab>
+			<p:tab title="#{msg.tabview_auditoria}">
+				<ui:include src="/empresas/auditoriaEmpresa.xhtml" />
+			</p:tab>
+		</p:tabView>
+	</ui:define>
+</ui:composition>

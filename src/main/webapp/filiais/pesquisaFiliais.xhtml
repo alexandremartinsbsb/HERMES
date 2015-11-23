@@ -1,0 +1,163 @@
+<ui:composition template="/WEB-INF/templates/layoutPadrao.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="titulo">#{msg.subtitulo_pesquisa_filial}</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="frmPesquisaFilial">
+			<h2>#{msg.subtitulo_pesquisa_filial}</h2>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="#{msg.botao_pesquisa}" update="frmPesquisaFilial:tabelaFiliais" />
+				</f:facet>
+				<f:facet name="right">
+					<p:menuButton value="Exportar" rendered="#{not empty pesquisaFilialBean.lazyFiliais}">
+						<p:menuitem value="EXCEL (.xls)" ajax="false">
+							<p:dataExporter type="xls" target="tabelaFiliais" fileName="filiais" postProcessor="#{pesquisaFilialBean.posProcessarXls}" />
+						</p:menuitem>
+						<p:menuitem value="PDF (.pdf)" ajax="false">
+							<p:dataExporter type="pdf" target="tabelaFiliais" fileName="filiais" />
+						</p:menuitem>
+						<p:menuitem value="CSV (.csv)" ajax="false">
+							<p:dataExporter type="csv" target="tabelaFiliais" fileName="filiais" />
+						</p:menuitem>
+						<p:menuitem value="XML (.xml)" ajax="false">
+							<p:dataExporter type="xml" target="tabelaFiliais" fileName="filiais" />
+						</p:menuitem>
+					</p:menuButton>
+
+					<span class="ui-separator"> <span class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+					<p:button value="#{msg.botao_novo}" outcome="/filiais/cadastroFilial" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid id="painelPesquisaFilial" columns="2" columnClasses="ui-grid-col-1,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+				<p:outputLabel value="#{msg.label_pesquisa_filial_nome}" for="nome" styleClass="estilo-campo" />
+				<p:inputText id="nome" value="#{pesquisaFilialBean.filtro.nomeFantasia}" styleClass="estilo-campo" placeholder="#{msg.cadastro_filial_placeholder_nome}" />
+
+			</p:panelGrid>
+
+			<p:dataTable id="tabelaFiliais" var="filial" value="#{pesquisaFilialBean.lazyFiliais}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
+				rows="35" paginator="true" paginatorPosition="bottom" lazy="true" rowsPerPageTemplate="20,35,50"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+				<p:column headerText="#{msg.cadastro_filial_empresa}" sortBy="#{filial.empresa}">
+					<h:outputText value="#{filial.empresa.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_nome_fantasia}" sortBy="#{filial.nomeFantasia}">
+					<h:outputText value="#{filial.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_razao_social}" sortBy="#{filial.razaoSocial}">
+					<h:outputText value="#{filial.razaoSocial}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_cnpj}" sortBy="#{filial.cnpj}">
+					<h:outputText value="#{filial.cnpj}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_ie}" sortBy="#{filial.inscricaoEstadual}">
+					<h:outputText value="#{filial.inscricaoEstadual}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_im}" sortBy="#{filial.inscricaoMunicipal}">
+					<h:outputText value="#{filial.inscricaoMunicipal}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_selectonemenu_crt}" sortBy="#{filial.crt}">
+					<h:outputText value="#{filial.crt.descricao}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_crt_issqn}" sortBy="#{filial.crtIssqn}">
+					<h:outputText value="#{filial.crtIssqn.descricao}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_responsavel}" sortBy="#{filial.responsavel}">
+					<h:outputText value="#{filial.responsavel}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_selectonemenu_ramo}" sortBy="#{filial.ramo}">
+					<h:outputText value="#{filial.ramo.descricao}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_filial_site}" sortBy="#{filial.site}">
+					<h:outputText value="#{filial.site}" />
+				</p:column>
+
+				<p:column styleClass="coluna-opcoes" headerText="#{msg.coluna_opcoes}" exportable="false">
+					<p:commandButton update=":frmPesquisaFilial:filialDetalhe" oncomplete="PF('filialDetalhesDialog').show()" icon="ui-icon-search"
+						title="#{msg.botao_detalhes}" style="width: 30px;">
+						<f:setPropertyActionListener value="#{filial}" target="#{pesquisaFilialBean.filialSelecionada}" />
+					</p:commandButton>
+
+					<p:button outcome="/filiais/cadastroFilial" icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;">
+						<f:param name="filial" value="#{filial.pk}" />
+					</p:button>
+
+					<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":frmPesquisaFilial:confirmacaoExclusaoDialog" style="width: 30px;">
+						<f:setPropertyActionListener target="#{pesquisaFilialBean.filialSelecionada}" value="#{filial}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}" message="#{msg.confirmdialog_menssagem} #{pesquisaFilialBean.filialSelecionada.nomeFantasia}?"
+				widgetVar="confirmacaoExclusao" id="confirmacaoExclusaoDialog" showEffect="drop" hideEffect="drop">
+				<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusao').hide(); return false;" styleClass="ui-confirmdialog-no"
+					icon="ui-icon-close" />
+				<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusao').hide();" action="#{pesquisaFilialBean.excluir()}"
+					process="@this" update=":frmPesquisaFilial:tabelaFiliais" id="yesButton" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			</p:confirmDialog>
+
+			<p:dialog header="#{msg.subtitulo_detalhes}" widgetVar="filialDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
+				<p:outputPanel id="filialDetalhe" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty pesquisaFilialBean.filialSelecionada}" columnClasses="label,value">
+						<f:facet name="header">
+							<p:graphicImage value="#{pesquisaFilialBean.logo}" cache="false" />
+						</f:facet>
+
+						<p:outputLabel value="#{msg.cadastro_filial_codigo}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.pk}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_empresa}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.empresa.nomeFantasia}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_nome_fantasia}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.nomeFantasia}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_razao_social}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.razaoSocial}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_cnpj}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.cnpj}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_ie}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.inscricaoEstadual}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_im}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.inscricaoMunicipal}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_responsavel}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.responsavel}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_selectonemenu_crt}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.crt.descricao}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_crt_issqn}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.crtIssqn.descricao}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_selectonemenu_ramo}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.ramo.descricao}" />
+
+						<p:outputLabel value="#{msg.cadastro_filial_site}" />
+						<p:outputLabel value="#{pesquisaFilialBean.filialSelecionada.site}" />
+					</p:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

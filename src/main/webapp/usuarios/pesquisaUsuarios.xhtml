@@ -1,0 +1,135 @@
+<ui:composition template="/WEB-INF/templates/layoutPadrao.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="titulo">#{msg.subtitulo_pesquisa_usuario}</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="frmPesquisaUsuario">
+			<h2>#{msg.subtitulo_pesquisa_usuario}</h2>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="#{msg.botao_pesquisa}" update="frmPesquisaUsuario:tabelaUsuarios" />
+				</f:facet>
+				<f:facet name="right">
+
+					<p:menuButton value="Exportar" rendered="#{not empty pesquisaUsuarioBean.lazyUsuarios}">
+						<p:menuitem value="EXCEL (.xls)" ajax="false">
+							<p:dataExporter type="xls" target="tabelaUsuarios" fileName="usuarios" postProcessor="#{pesquisaUsuariosBean.posProcessarXls}" />
+						</p:menuitem>
+						<p:menuitem value="PDF (.pdf)" ajax="false">
+							<p:dataExporter type="pdf" target="tabelaUsuarios" fileName="usuarios" />
+						</p:menuitem>
+						<p:menuitem value="CSV (.csv)" ajax="false">
+							<p:dataExporter type="csv" target="tabelaUsuarios" fileName="usuarios" />
+						</p:menuitem>
+						<p:menuitem value="XML (.xml)" ajax="false">
+							<p:dataExporter type="xml" target="tabelaUsuarios" fileName="usuarios" />
+						</p:menuitem>
+					</p:menuButton>
+
+					<span class="ui-separator"> <span class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:button value="#{msg.botao_novo}" outcome="/usuarios/cadastroUsuario" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid id="painelPesquisaUsuario" columns="2" columnClasses="ui-grid-col-1,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+				<p:outputLabel value="#{msg.label_pesquisa_usuario_nome}" for="nome" styleClass="estilo-campo" />
+				<p:inputText id="nome" value="#{pesquisaUsuarioBean.filtro.nome}" styleClass="estilo-campo" placeholder="#{msg.cadastro_usuario_placeholder_nome}" />
+
+			</p:panelGrid>
+
+			<p:dataTable id="tabelaUsuarios" var="usuario" value="#{pesquisaUsuarioBean.lazyUsuarios}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
+				rows="35" paginator="true" paginatorPosition="bottom" lazy="true" rowsPerPageTemplate="20,35,50"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+				<p:column headerText="#{msg.cadastro_usuario_nome}" sortBy="#{usuario.nome}">
+					<h:outputText value="#{usuario.nome}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_usuario_filial}" sortBy="#{usuario.filial}">
+					<h:outputText value="#{usuario.filial.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_usuario_departamento}" sortBy="#{usuario.departamento}">
+					<h:outputText value="#{usuario.departamento.nome}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_usuario_cargo}" sortBy="#{usuario.cargo}">
+					<h:outputText value="#{usuario.cargo}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_usuario_login}" sortBy="#{usuario.login}">
+					<h:outputText value="#{usuario.login}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_usuario_email}" sortBy="#{usuario.email}">
+					<h:outputText value="#{usuario.email}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_usuario_situacao}" sortBy="#{usuario.situacao}" style="text-align: center;">
+					<p:selectBooleanButton value="#{usuarioBean.usuario.situacao}" onLabel="Yes" offLabel="No" onIcon="fa fa-check-circle-o"/>
+				</p:column>
+
+				<p:column styleClass="coluna-opcoes" headerText="#{msg.coluna_opcoes}" exportable="false">
+					<p:commandButton update=":frmPesquisaUsuario:usuarioDetalhe" oncomplete="PF('detalhesDialog').show()" icon="ui-icon-search" title="#{msg.botao_detalhes}"
+						style="width: 30px;">
+						<f:setPropertyActionListener value="#{usuario}" target="#{pesquisaUsuarioBean.usuarioSelecionado}" />
+					</p:commandButton>
+
+					<p:button outcome="/usuarios/cadastroUsuario" icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;">
+						<f:param name="usuario" value="#{usuario.pk}" />
+					</p:button>
+
+					<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":frmPesquisaUsuario:confirmacaoExclusaoDialog" style="width: 30px;">
+						<f:setPropertyActionListener value="#{usuario}" target="#{pesquisaUsuarioBean.usuarioSelecionado}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}" message="#{msg.confirmdialog_menssagem} #{pesquisaUsuarioBean.usuarioSelecionado.nome}?"
+				widgetVar="confirmacaoExclusao" id="confirmacaoExclusaoDialog" showEffect="drop" hideEffect="drop">
+				<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusao').hide(); return false;" styleClass="ui-confirmdialog-no"
+					icon="ui-icon-close" />
+				<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusao').hide();" action="#{pesquisaUsuarioBean.excluir()}"
+					process="@this" update=":frmPesquisaUsuario:tabelaUsuarios" id="yesButton" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			</p:confirmDialog>
+
+			<p:dialog header="#{msg.subtitulo_detalhes}" widgetVar="detalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
+				<p:outputPanel id="usuarioDetalhe" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty pesquisaUsuarioBean.usuarioSelecionado}" columnClasses="label,value">
+
+						<p:outputLabel value="#{msg.cadastro_usuario_codigo}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.pk}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_nome}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.nome}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_filial}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.filial.nomeFantasia}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_departamento}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.departamento.nome}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_cargo}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.cargo}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_login}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.login}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_email}" />
+						<p:outputLabel value="#{pesquisaUsuarioBean.usuarioSelecionado.email}" />
+
+						<p:outputLabel value="#{msg.cadastro_usuario_situacao}" />
+						<p:selectBooleanButton value="#{pesquisaUsuarioBean.usuarioSelecionado.situacao}" onLabel="#{msg.cadastro_usuario_situacao_ativo}"
+							offLabel="#{msg.cadastro_usuario_situacao_inativo}" disabled="true" />
+					</p:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

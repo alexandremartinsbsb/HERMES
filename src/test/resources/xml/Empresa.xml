@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dataset>
+	<cadastro_empresa pk="1" empresa_string_cnpj="76.371.792/0001-72" empresa_string_nomefantasia="Empresa para teste" empresa_string_razaosocial="Empresa para teste .ltda"
+		empresa_string_responsavel="Alexandre M. Silva" />
+	<cadastro_empresa pk="2" empresa_string_cnpj="76.371.792/0001-00" empresa_string_nomefantasia="Empresa para teste" empresa_string_razaosocial="Empresa para teste .ltda"
+		empresa_string_responsavel="Alexandre M. Silva" />
+</dataset>

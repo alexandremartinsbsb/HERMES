@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id="frmPesquisaTelefones">
+		<p:commandButton oncomplete="PF('telefoneDetalhesDialog').show()" process="@this" update=":tabViewOpcoes:frmCadastroTelefone:painelCadastroTelefoneFilial"
+			value="#{msg.botao_adicionar}" styleClass="botao-adicionar" action="#{filialBean.adicionarTelefone}" />
+
+		<p:dataTable id="tabelaTelefoneFilial" var="telefoneFilial" value="#{filialBean.filial.telefones}" reflow="true"
+			emptyMessage="#{msg.datatable_pesquisa_menssagem}" rows="35" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="20,35,50"
+			paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+			<p:column headerText="#{msg.telefone_ddi}">
+				<p:outputLabel value="#{telefoneFilial.ddi.ddi}" />
+			</p:column>
+
+			<p:column headerText="#{msg.telefone_ddd}">
+				<p:outputLabel value="#{telefoneFilial.ddd.ddd}" />
+			</p:column>
+
+			<p:column headerText="#{msg.telefone_telefone}">
+				<p:outputLabel value="#{telefoneFilial.telefone}" />
+			</p:column>
+
+			<p:column headerText="#{msg.telefone_tipo}">
+				<p:outputLabel value="#{telefoneFilial.tipo.descricao}" />
+			</p:column>
+
+			<p:column styleClass="coluna-duas-opcoes" headerText="#{msg.coluna_opcoes}" id="colunaOpcoesContato">
+				<p:commandButton update=":tabViewOpcoes:frmCadastroTelefone:painelCadastroTelefoneFilial" oncomplete="PF('telefoneDetalhesDialog').show()" process="@this"
+					icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;">
+					<f:setPropertyActionListener target="#{filialBean.telefone}" value="#{telefoneFilial}" />
+				</p:commandButton>
+
+				<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusaoTelefone').show()" process="@this"
+					style="width: 30px;" update=":tabViewOpcoes:confirmacaoExclusaoTelefoneDialog">
+					<f:setPropertyActionListener target="#{filialBean.telefone}" value="#{telefoneFilial}" />
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</h:form>
+
+	<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}" message="#{msg.confirmdialog_menssagem} #{filialBean.telefone.telefone}?"
+		widgetVar="confirmacaoExclusaoTelefone" id="confirmacaoExclusaoTelefoneDialog" showEffect="drop" hideEffect="drop">
+		<h:form id="frmConfirmDialogTelefone">
+			<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusaoTelefone').hide(); return false;" styleClass="ui-confirmdialog-no"
+				icon="ui-icon-close" />
+			<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusaoTelefone').hide();"
+				update=":tabViewOpcoes:frmPesquisaTelefones:tabelaTelefoneFilial " action="#{filialBean.excluirTelefone}" process="@this" id="yesButton"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		</h:form>
+	</p:confirmDialog>
+
+	<p:dialog header="#{msg.subtitulo_pesquisa_contato}" widgetVar="telefoneDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
+		<h:form id="frmCadastroTelefone">
+			<p:outputPanel id="painelCadastroTelefoneFilial">
+
+				<h:panelGrid columns="3" cellpadding="5">
+					<p:outputLabel for="tipo" value="#{msg.telefone_tipo}" styleClass="estilo-campo" />
+					<p:selectOneMenu id="tipo" value="#{filialBean.telefone.tipo}" styleClass="estilo-campo">
+						<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+						<f:selectItems value="#{filialBean.tipoTelefone}" var="tipo" itemValue="#{tipo}" itemLabel="#{tipo.descricao}" />
+					</p:selectOneMenu>
+					<p:message for="tipo" display="icon" />
+
+					<p:outputLabel for="ddi" value="#{msg.telefone_ddi}" styleClass="estilo-campo" />
+					<p:selectOneMenu id="ddi" value="#{filialBean.telefone.ddi}" effect="fade" filter="true" filterMatchMode="startsWith" var="pddi" styleClass="estilo-campo">
+						<p:ajax event="change" process="@this" update="ddd" />
+
+						<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+						<f:selectItems value="#{filialBean.paises}" var="ddi" itemValue="#{ddi}" itemLabel="#{ddi.ddi}" />
+
+						<p:column style="width:10%">
+							<p:graphicImage value="#{filialBean.telefone.ddi.bandeira}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{pddi.ddi}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{pddi.nome}" />
+						</p:column>
+					</p:selectOneMenu>
+					<p:message for="ddi" display="icon" />
+
+					<p:outputLabel value="#{msg.telefone_ddd}" for="ddd" styleClass="estilo-campo" />
+					<p:inputText id="ddd" value="#{filialBean.ddd}" styleClass="estilo-campo" readonly="#{filialBean.faseRenderizacao}" />
+					<p:commandButton icon="fa fa-search" process="@this" update="@none" action="#{filialBean.abrirDialogoCidade}" ignoreAutoUpdate="true">
+						<p:ajax event="dialogReturn" listener="#{filialBean.cidadeSelecionada}" update="ddd" ignoreAutoUpdate="true" />
+					</p:commandButton>
+
+					<p:outputLabel for="telefone" value="#{msg.telefone_telefone}" styleClass="estilo-campo" />
+					<p:inputText id="telefone" value="#{filialBean.telefone.telefone}" styleClass="estilo-campo" />
+					<p:message for="telefone" display="icon" />
+
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.botao_salvar}" action="#{filialBean.inserirTelefone}"
+							update=":tabViewOpcoes:frmPesquisaTelefones:tabelaTelefoneFilial :tabViewOpcoes:frmCadastroTelefone:painelCadastroTelefoneFilial"
+							oncomplete="painelCadastroTelefone(xhr, status, args)" />
+					</f:facet>
+				</h:panelGrid>
+			</p:outputPanel>
+		</h:form>
+	</p:dialog>
+</ui:composition>

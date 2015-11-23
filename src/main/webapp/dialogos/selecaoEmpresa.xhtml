@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>#{msg.subtitulo_dialogo_selecao_empresa}</title>
+	<h:outputStylesheet library="css" name="sistema.css" />
+</h:head>
+<h:body>
+
+	<h:form id="frmPesquisaEmpresa">
+
+		<p:panelGrid id="painelPesquisaEmpresa" columns="3" columnClasses="ui-grid-col-1,ui-grid-col-5,ui-grid-col-1" layout="grid" styleClass="ui-panelgrid-blank">
+
+			<p:outputLabel value="#{msg.label_pesquisa_empresa_nome}:" for="nome" styleClass="estilo-campo" />
+			<p:inputText id="nome" value="#{pesquisaEmpresaBean.filtro.nomeFantasia}" styleClass="estilo-campo" placeholder="nome fantasia" />
+			<p:commandButton value="#{msg.botao_pesquisa}" update="frmPesquisaEmpresa:tabelaEmpresas" />
+
+		</p:panelGrid>
+
+		<p:dataTable id="tabelaEmpresas" var="empresa" value="#{pesquisaEmpresaBean.lazyEmpresas}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_msg}"
+			rows="35" paginator="true" paginatorPosition="bottom" lazy="true" rowsPerPageTemplate="20,35,50"
+			paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+			<p:column headerText="#{msg.datatable_pesquisa_empresa_nome_fantasia}">
+				<h:outputText value="#{empresa.nomeFantasia}" />
+			</p:column>
+
+			<p:column headerText="#{msg.datatable_pesquisa_empresa_razao_social}">
+				<h:outputText value="#{empresa.razaoSocial}" />
+			</p:column>
+
+			<p:column headerText="#{msg.datatable_pesquisa_empresa_cnpj}" style="width: 180px;">
+				<h:outputText value="#{empresa.cnpj}" />
+			</p:column>
+
+			<p:column headerText="#{msg.datatable_pesquisa_empresa_responsavel}" style="width: 150px;">
+				<h:outputText value="#{empresa.responsavel}" />
+			</p:column>
+
+			<p:column headerText="#{msg.datatable_pesquisa_empresa_ramo}" style="width: 90px;">
+				<h:outputText value="#{empresa.ramo.descricao}" />
+			</p:column>
+
+			<p:column styleClass="coluna-opcoes" headerText="#{msg.botao_dialogo_coluna_selecionar}">
+				<p:commandButton icon="fa fa-check-square-o" style="width: 30px;" process="@this" action="#{empresaBean.selecionar(empresa)}" />
+			</p:column>
+		</p:dataTable>
+	</h:form>
+</h:body>
+</html>

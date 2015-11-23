@@ -1,0 +1,85 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id="frmPesquisaContatos">
+		<p:commandButton oncomplete="PF('contatoEmpresaDetalhesDialog').show()" process="@this"
+			update=":tabViewOpcoes:frmCadastroContato:painelCadastroContatoEmpresa" value="#{msg.botao_adicionar}" styleClass="botao-adicionar"
+			action="#{empresaBean.adicionarContato}" />
+
+		<p:dataTable id="tabelaContatoEmpresa" var="contatoEmpresa" value="#{empresaBean.empresa.contatos}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
+			rows="35" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="20,35,50"
+			paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+			<p:column headerText="#{msg.contato_nome}">
+				<p:outputLabel value="#{contatoEmpresa.nome}" />
+			</p:column>
+
+			<p:column headerText="#{msg.contato_email}">
+				<p:outputLabel value="#{contatoEmpresa.email}" />
+			</p:column>
+
+			<p:column headerText="#{msg.contato_origem}">
+				<p:outputLabel value="#{contatoEmpresa.origem}" />
+			</p:column>
+
+			<p:column headerText="#{msg.contato_observacao}">
+				<p:outputLabel value="#{contatoEmpresa.observacao}" />
+			</p:column>
+
+			<p:column styleClass="coluna-duas-opcoes" headerText="#{msg.coluna_opcoes}" id="colunaOpcoesContato">
+				<p:commandButton update=":tabViewOpcoes:frmCadastroContato:painelCadastroContatoEmpresa" oncomplete="PF('contatoEmpresaDetalhesDialog').show()"
+					process="@this" icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;">
+					<f:setPropertyActionListener target="#{empresaBean.contato}" value="#{contatoEmpresa}" />
+				</p:commandButton>
+
+				<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusaoContato').show()" process="@this"
+					style="width: 30px;" update=":tabViewOpcoes:confirmacaoExclusaoContatoDialog">
+					<f:setPropertyActionListener target="#{empresaBean.contato}" value="#{contatoEmpresa}" />
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</h:form>
+
+	<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}" message="#{msg.confirmdialog_menssagem} #{empresaBean.contato.nome}?"
+		widgetVar="confirmacaoExclusaoContato" id="confirmacaoExclusaoContatoDialog" showEffect="drop" hideEffect="drop">
+		<h:form id="frmConfirmDialogContato">
+			<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusaoContato').hide(); return false;" styleClass="ui-confirmdialog-no"
+				icon="ui-icon-close" />
+			<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusaoContato').hide();"
+				update=":tabViewOpcoes:frmPesquisaContatos:tabelaContatoEmpresa " action="#{empresaBean.excluirContato}" process="@this" id="yesButton"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		</h:form>
+	</p:confirmDialog>
+
+	<p:dialog header="#{msg.subtitulo_pesquisa_contato}" widgetVar="contatoEmpresaDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop"
+		resizable="false">
+		<h:form id="frmCadastroContato">
+			<p:outputPanel id="painelCadastroContatoEmpresa">
+				
+				<h:panelGrid columns="3" cellpadding="5">
+					<p:outputLabel for="nome" value="#{msg.contato_nome}" styleClass="estilo-campo" />
+					<p:inputText id="nome" value="#{empresaBean.contato.nome}" styleClass="estilo-campo" />
+					<p:message for="nome" display="icon" />
+
+					<p:outputLabel for="email" value="#{msg.contato_email}" styleClass="estilo-campo" />
+					<p:inputText id="email" value="#{empresaBean.contato.email}" styleClass="estilo-campo" />
+					<p:message for="email" display="icon" />
+
+					<p:outputLabel for="origem" value="#{msg.contato_origem}" styleClass="estilo-campo" />
+					<p:inputText id="origem" value="#{empresaBean.contato.origem}" styleClass="estilo-campo" />
+					<p:message for="origem" display="icon" />
+
+					<p:outputLabel for="observacao" value="#{msg.contato_observacao}" styleClass="estilo-campo" />
+					<p:inputTextarea id="observacao" value="#{empresaBean.contato.observacao}" rows="6" cols="33" styleClass="estilo-campo" />
+					<p:message for="observacao" display="icon" />
+
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.botao_salvar}" action="#{empresaBean.inserirContato()}"
+							update=":tabViewOpcoes:frmPesquisaContatos:tabelaContatoEmpresa :tabViewOpcoes:frmCadastroContato:painelCadastroContatoEmpresa"
+							oncomplete="painelCadastroContatoEmpresa(xhr, status, args)" />
+					</f:facet>
+				</h:panelGrid>
+			</p:outputPanel>
+		</h:form>
+	</p:dialog>
+</ui:composition>

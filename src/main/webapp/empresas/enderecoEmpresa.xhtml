@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<h:form id="frmPesquisaEnderecos">
+		<p:commandButton oncomplete="PF('enderecoDetalhesDialog').show()" process="@this" value="#{msg.botao_adicionar}" styleClass="botao-adicionar"
+			action="#{empresaBean.adicionarEndereco}" />
+
+		<p:dataTable id="tabelaEnderecoEmpresa" var="enderecoEmpresa" value="#{empresaBean.empresa.enderecos}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
+			rows="35" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="20,35,50"
+			paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+			<p:column headerText="#{msg.endereco_cep}" style="width: 100px;">
+				<p:outputLabel value="#{enderecoEmpresa.cep}" />
+			</p:column>
+
+			<p:column headerText="#{msg.endereco_logradouro}">
+				<p:outputLabel value="#{enderecoEmpresa.logradouro}" />
+			</p:column>
+
+			<p:column headerText="#{msg.endereco_complemento}">
+				<p:outputLabel value="#{enderecoEmpresa.complemento}" />
+			</p:column>
+
+			<p:column headerText="#{msg.endereco_bairro}" style="width: 150px;">
+				<p:outputLabel value="#{enderecoEmpresa.bairro}" />
+			</p:column>
+
+			<p:column headerText="#{msg.endereco_cidade}" style="width: 130px;">
+				<p:outputLabel value="#{enderecoEmpresa.cidade.nome}" />
+			</p:column>
+
+			<p:column headerText="#{msg.endereco_estado}" style="width: 50px; text-align: center;">
+				<p:outputLabel value="#{enderecoEmpresa.estado.sigla}" />
+			</p:column>
+
+			<p:column headerText="#{msg.endereco_pais}" style="width: 65px;">
+				<p:outputLabel value="#{enderecoEmpresa.pais.nome}" />
+			</p:column>
+
+			<p:column styleClass="coluna-duas-opcoes" headerText="#{msg.coluna_opcoes}" exportable="false" id="colunaOpcoes">
+				<p:commandButton update=":tabViewOpcoes:frmCadastroEndereco:painelCadastroEnderecoEmpresa" oncomplete="PF('enderecoDetalhesDialog').show()"
+					process="@this" icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;" id="btnDetalhes">
+					<f:setPropertyActionListener target="#{empresaBean.endereco}" value="#{enderecoEmpresa}" />
+				</p:commandButton>
+
+				<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusaoEndereco').show()" process="@this"
+					style="width: 30px;" update=":tabViewOpcoes:confirmacaoExclusaoEnderecoDialog">
+					<f:setPropertyActionListener target="#{empresaBean.endereco}" value="#{enderecoEmpresa}" />
+				</p:commandButton>
+			</p:column>
+		</p:dataTable>
+	</h:form>
+
+	<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}" message="#{msg.confirmdialog_menssagem} #{empresaBean.endereco.logradouro}?"
+		widgetVar="confirmacaoExclusaoEndereco" id="confirmacaoExclusaoEnderecoDialog" showEffect="drop" hideEffect="drop">
+		<h:form id="frmConfirmDialog">
+			<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusaoEndereco').hide(); return false;" styleClass="ui-confirmdialog-no"
+				icon="ui-icon-close" />
+			<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusaoEndereco').hide();"
+				update=":tabViewOpcoes:frmPesquisaEnderecos:tabelaEnderecoEmpresa " action="#{empresaBean.excluirEndereco()}" process="@this" id="yesButton"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		</h:form>
+	</p:confirmDialog>
+
+	<p:dialog header="#{msg.subtitulo_pesquisa_endereco}" widgetVar="enderecoDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop"
+		resizable="false">
+		<h:form id="frmCadastroEndereco">
+			<p:outputPanel id="painelCadastroEnderecoEmpresa">
+				<h:panelGrid columns="3" cellpadding="5">
+
+					<p:outputLabel for="pais" value="#{msg.endereco_pais}" styleClass="estilo-campo" />
+					<p:selectOneMenu id="pais" value="#{empresaBean.endereco.pais}" effect="fade" filter="true" filterMatchMode="startsWith" var="p" styleClass="estilo-campo">
+						<p:ajax event="change" process="@this" update="estado" />
+
+						<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+						<f:selectItems value="#{empresaBean.paises}" var="pais" itemValue="#{pais}" itemLabel="#{pais.nome}" />
+
+						<p:column style="width:10%">
+							<p:graphicImage value="#{empresaBean.endereco.pais.bandeira}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{p.nome}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{p.sigla}" />
+						</p:column>
+					</p:selectOneMenu>
+					<p:message for="pais" display="icon" />
+
+					<p:outputLabel for="estado" value="#{msg.endereco_estado}" styleClass="estilo-campo" />
+					<p:selectOneMenu id="estado" value="#{empresaBean.endereco.estado}" effect="fade" filter="true" filterMatchMode="startsWith" var="e"
+						styleClass="estilo-campo">
+						<p:ajax event="change" process="@this" update="cidade" />
+
+						<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+						<f:selectItems value="#{empresaBean.estadosEndereco}" var="estado" itemValue="#{estado}" itemLabel="#{estado.nome}" />
+
+						<p:column style="width:10%">
+							<p:graphicImage value="#{empresaBean.endereco.estado.bandeira}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{e.nome}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{e.sigla}" />
+						</p:column>
+					</p:selectOneMenu>
+					<p:message for="estado" display="icon" />
+
+					<p:outputLabel for="cidade" value="#{msg.endereco_cidade}" styleClass="estilo-campo" />
+					<p:selectOneMenu id="cidade" value="#{empresaBean.endereco.cidade}" effect="fade" filter="true" filterMatchMode="startsWith" var="c"
+						styleClass="estilo-campo">
+						<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+						<f:selectItems value="#{empresaBean.cidades}" var="cidade" itemValue="#{cidade}" itemLabel="#{cidade.nome}" />
+
+						<p:column style="width:10%">
+							<p:graphicImage value="#{empresaBean.endereco.cidade.bandeira}" />
+						</p:column>
+
+						<p:column>
+							<p:outputLabel value="#{c.nome}" />
+						</p:column>
+					</p:selectOneMenu>
+					<p:message for="cidade" display="icon" />
+
+					<p:outputLabel for="logradouro" value="#{msg.endereco_logradouro}" styleClass="estilo-campo" />
+					<p:inputText id="logradouro" value="#{empresaBean.endereco.logradouro}" styleClass="estilo-campo" />
+					<p:message for="logradouro" display="icon" />
+
+					<p:outputLabel for="complemento" value="#{msg.endereco_complemento}" styleClass="estilo-campo" />
+					<p:inputText id="complemento" value="#{empresaBean.endereco.complemento}" styleClass="estilo-campo" />
+					<p:message for="complemento" display="icon" />
+
+					<p:outputLabel for="bairro" value="#{msg.endereco_bairro}" styleClass="estilo-campo" />
+					<p:inputText id="bairro" value="#{empresaBean.endereco.bairro}" styleClass="estilo-campo" />
+					<p:message for="bairro" display="icon" />
+
+					<p:outputLabel for="cep" value="#{msg.endereco_cep}" styleClass="estilo-campo" />
+					<p:inputText id="cep" value="#{empresaBean.endereco.cep}" styleClass="estilo-campo" />
+					<p:message for="cep" display="icon" />
+
+					<f:facet name="footer">
+						<p:commandButton value="#{msg.botao_salvar}" action="#{empresaBean.inserirEndereco()}"
+							update=":tabViewOpcoes:frmPesquisaEnderecos:tabelaEnderecoEmpresa :tabViewOpcoes:frmCadastroEndereco:painelCadastroEnderecoEmpresa"
+							oncomplete="painelCadastroEndereco(xhr, status, args)" />
+					</f:facet>
+				</h:panelGrid>
+			</p:outputPanel>
+		</h:form>
+	</p:dialog>
+</ui:composition>

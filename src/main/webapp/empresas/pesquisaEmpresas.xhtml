@@ -1,0 +1,159 @@
+<ui:composition template="/WEB-INF/templates/layoutPadrao.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="titulo">#{msg.subtitulo_pesquisa_empresa}</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="frmPesquisaEmpresa">
+			<h2>#{msg.subtitulo_pesquisa_empresa}</h2>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton value="#{msg.botao_pesquisa}" update="frmPesquisaEmpresa:tabelaEmpresas" />
+				</f:facet>
+				<f:facet name="right">
+
+					<p:menuButton value="Exportar" rendered="#{not empty pesquisaEmpresaBean.lazyEmpresas}">
+						<p:menuitem value="EXCEL (.xls)" ajax="false">
+							<p:dataExporter type="xls" target="tabelaEmpresas" fileName="empresas" postProcessor="#{pesquisaEmpresaBean.posProcessarXls}" />
+						</p:menuitem>
+						<p:menuitem value="PDF (.pdf)" ajax="false">
+							<p:dataExporter type="pdf" target="tabelaEmpresas" fileName="empresas" />
+						</p:menuitem>
+						<p:menuitem value="CSV (.csv)" ajax="false">
+							<p:dataExporter type="csv" target="tabelaEmpresas" fileName="empresas" />
+						</p:menuitem>
+						<p:menuitem value="XML (.xml)" ajax="false">
+							<p:dataExporter type="xml" target="tabelaEmpresas" fileName="empresas" />
+						</p:menuitem>
+					</p:menuButton>
+
+					<span class="ui-separator"> <span class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:button value="#{msg.botao_novo}" outcome="/empresas/cadastroEmpresa" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid id="painelPesquisaEmpresa" columns="2" columnClasses="ui-grid-col-1,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+
+				<p:outputLabel value="#{msg.label_pesquisa_empresa_nome}" for="nome" styleClass="estilo-campo" />
+				<p:inputText id="nome" value="#{pesquisaEmpresaBean.filtro.nomeFantasia}" styleClass="estilo-campo" placeholder="#{msg.cadastro_empresa_placeholder_nome}" />
+
+			</p:panelGrid>
+
+			<p:dataTable id="tabelaEmpresas" var="empresa" value="#{pesquisaEmpresaBean.lazyEmpresas}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
+				rows="35" paginator="true" paginatorPosition="bottom" lazy="true" rowsPerPageTemplate="20,35,50"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+
+				<p:column headerText="#{msg.cadastro_empresa_nome_fantasia}" sortBy="#{empresa.nomeFantasia}">
+					<h:outputText value="#{empresa.nomeFantasia}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_razao_social}" sortBy="#{empresa.razaoSocial}">
+					<h:outputText value="#{empresa.razaoSocial}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_cnpj}" sortBy="#{empresa.cnpj}">
+					<h:outputText value="#{empresa.cnpj}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_ie}" sortBy="#{empresa.inscricaoEstadual}">
+					<h:outputText value="#{empresa.inscricaoEstadual}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_im}" sortBy="#{empresa.inscricaoMunicipal}">
+					<h:outputText value="#{empresa.inscricaoMunicipal}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_selectonemenu_crt}" sortBy="#{empresa.crt}">
+					<h:outputText value="#{empresa.crt.descricao}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_crt_issqn}" sortBy="#{empresa.crtIssqn}">
+					<h:outputText value="#{empresa.crtIssqn.descricao}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_responsavel}" sortBy="#{empresa.responsavel}">
+					<h:outputText value="#{empresa.responsavel}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_selectonemenu_ramo}" sortBy="#{empresa.ramo}">
+					<h:outputText value="#{empresa.ramo.descricao}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_empresa_site}" sortBy="#{empresa.site}">
+					<h:outputText value="#{empresa.site}" />
+				</p:column>
+
+				<p:column styleClass="coluna-opcoes" headerText="#{msg.coluna_opcoes}" exportable="false">
+					<p:commandButton update=":frmPesquisaEmpresa:empresaDetalhe" oncomplete="PF('empresaDetalhesDialog').show()" icon="ui-icon-search"
+						title="#{msg.botao_detalhes}" style="width: 30px;">
+						<f:setPropertyActionListener value="#{empresa}" target="#{pesquisaEmpresaBean.empresaSelecionada}" />
+					</p:commandButton>
+
+					<p:button outcome="/empresas/cadastroEmpresa" icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;">
+						<f:param name="empresa" value="#{empresa.pk}" />
+					</p:button>
+
+					<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						update=":frmPesquisaEmpresa:confirmacaoExclusaoDialog" style="width: 30px;">
+						<f:setPropertyActionListener target="#{pesquisaEmpresaBean.empresaSelecionada}" value="#{empresa}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+
+			<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}"
+				message="#{msg.confirmdialog_menssagem} #{pesquisaEmpresaBean.empresaSelecionada.nomeFantasia}?" widgetVar="confirmacaoExclusao"
+				id="confirmacaoExclusaoDialog" showEffect="drop" hideEffect="drop">
+				<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusao').hide(); return false;" styleClass="ui-confirmdialog-no"
+					icon="ui-icon-close" />
+				<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusao').hide();" action="#{pesquisaEmpresaBean.excluir()}"
+					process="@this" update="frmPesquisaEmpresa:tabelaEmpresas" id="yesButton" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			</p:confirmDialog>
+
+			<p:dialog header="#{msg.subtitulo_detalhes}" widgetVar="empresaDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
+				<p:outputPanel id="empresaDetalhe" style="text-align:center;">
+					<p:panelGrid columns="2" rendered="#{not empty pesquisaEmpresaBean.empresaSelecionada}" columnClasses="label,value">
+						<f:facet name="header">
+							<p:graphicImage value="#{pesquisaEmpresaBean.logo}" cache="false" />
+						</f:facet>
+
+						<p:outputLabel value="#{msg.cadastro_empresa_codigo}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.pk}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_nome_fantasia}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.nomeFantasia}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_razao_social}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.razaoSocial}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_cnpj}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.cnpj}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_ie}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.inscricaoEstadual}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_im}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.inscricaoMunicipal}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_responsavel}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.responsavel}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_selectonemenu_crt}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.crt.descricao}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_crt_issqn}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.crtIssqn.descricao}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_selectonemenu_ramo}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.ramo.descricao}" />
+
+						<p:outputLabel value="#{msg.cadastro_empresa_site}" />
+						<p:outputLabel value="#{pesquisaEmpresaBean.empresaSelecionada.site}" />
+					</p:panelGrid>
+				</p:outputPanel>
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

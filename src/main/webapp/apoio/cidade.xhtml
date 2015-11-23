@@ -1,0 +1,164 @@
+<ui:composition template="/WEB-INF/templates/layoutPadrao.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="titulo">#{msg.subtitulo_cadastro_cidade}</ui:define>
+
+	<ui:define name="conteudo">
+		<h:form id="frmCidade">
+			<h2>#{msg.subtitulo_cadastro_cidade}</h2>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton oncomplete="PF('adicionarDetalhesDialog').show()" process="@this" update=":frmCadastroCidade:painelCadastroCidade"
+						value="#{msg.botao_adicionar}" action="#{cidadeBean.adicionar}" />
+					<span class="ui-separator"> <span class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+					<p:commandButton value="#{msg.botao_pesquisa}" update=":frmCidade:tabelaCidades" />
+				</f:facet>
+				<f:facet name="right">
+
+					<p:menuButton value="Exportar" rendered="#{not empty cidadeBean.lazyCidades}">
+						<p:menuitem value="EXCEL (.xls)" ajax="false">
+							<p:dataExporter type="xls" target="tabelaCidades" fileName="cidades" postProcessor="#{cidadeBean.posProcessarXls}" />
+						</p:menuitem>
+						<p:menuitem value="PDF (.pdf)" ajax="false">
+							<p:dataExporter type="pdf" target="tabelaCidades" fileName="cidades" />
+						</p:menuitem>
+						<p:menuitem value="CSV (.csv)" ajax="false">
+							<p:dataExporter type="csv" target="tabelaCidades" fileName="cidades" />
+						</p:menuitem>
+						<p:menuitem value="XML (.xml)" ajax="false">
+							<p:dataExporter type="xml" target="tabelaCidades" fileName="cidades" />
+						</p:menuitem>
+					</p:menuButton>
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid columns="2" columnClasses="ui-grid-col-1,ui-grid-col-6" layout="grid" styleClass="ui-panelgrid-blank">
+				<p:outputLabel value="#{msg.label_pesquisa_empresa_nome}" for="nome" styleClass="estilo-campo" />
+				<p:inputText id="nome" value="#{cidadeBean.filtro.nome}" styleClass="estilo-campo" placeholder="#{msg.cadastro_cidade_placeholder_nome}" />
+			</p:panelGrid>
+
+			<p:dataTable id="tabelaCidades" var="cidade" value="#{cidadeBean.lazyCidades}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}" rows="35"
+				paginator="true" paginatorPosition="bottom" lazy="true" rowsPerPageTemplate="20,35,50"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
+				
+				<p:column headerText="#{msg.cadastro_cidade_ddd}" sortBy="#{cidade.ddd}">
+					<h:outputText value="#{cidade.ddd}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_cidade_nome}" sortBy="#{cidade.nome}">
+					<h:outputText value="#{cidade.nome}" />
+				</p:column>
+
+				<p:column headerText="#{msg.cadastro_cidade_estado}" sortBy="#{cidade.estado}">
+					<h:outputText value="#{cidade.estado.nome} / #{cidade.estado.sigla}" />
+				</p:column>
+
+				<p:column styleClass="coluna-duas-opcoes" headerText="#{msg.coluna_opcoes}" id="colunaOpcoesContato" exportable="false">
+					<p:commandButton update=":cidadeDetalhe" oncomplete="PF('detalhesDialog').show()" icon="ui-icon-search" title="#{msg.botao_detalhes}"
+						style="width: 30px;">
+						<f:setPropertyActionListener target="#{cidadeBean.cidade}" value="#{cidade}" />
+					</p:commandButton>
+
+					<p:commandButton update=":frmCadastroCidade:painelCadastroCidade" oncomplete="PF('adicionarDetalhesDialog').show()" process="@this" icon="ui-icon-pencil"
+						title="#{msg.botao_editar}" style="width: 30px;">
+						<f:setPropertyActionListener target="#{cidadeBean.cidade}" value="#{cidade}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="#{msg.botao_excluir}" oncomplete="PF('confirmacaoExclusao').show()" process="@this"
+						style="width: 30px;" update=":confirmacaoExclusaoDialog">
+						<f:setPropertyActionListener target="#{cidadeBean.cidade}" value="#{cidade}" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+		</h:form>
+
+		<p:confirmDialog header="#{msg.confirmdialog_exclusao_titulo}" message="#{msg.confirmdialog_menssagem} #{cidadeBean.cidade.nome}?" widgetVar="confirmacaoExclusao"
+			id="confirmacaoExclusaoDialog" showEffect="drop" hideEffect="drop">
+			<h:form id="frmConfirmDialog">
+				<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusao').hide(); return false;" styleClass="ui-confirmdialog-no"
+					icon="ui-icon-close" />
+				<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusao').hide();" update=":frmCidade:tabelaCidades"
+					action="#{cidadeBean.excluir}" process="@this" id="yesButton" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+			</h:form>
+		</p:confirmDialog>
+
+		<p:dialog header="#{msg.subtitulo_pesquisa_contato}" widgetVar="adicionarDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
+			<h:form id="frmCadastroCidade">
+				<p:outputPanel id="painelCadastroCidade">
+					<h:panelGrid columns="3" cellpadding="5">
+						<p:outputLabel for="codigo" value="#{msg.cadastro_cidade_codigo}" styleClass="estilo-campo" />
+						<p:inputText id="codigo" value="#{cidadeBean.cidade.pk}" styleClass="estilo-campo" disabled="true" />
+						<p:spacer />
+
+						<p:outputLabel for="estado" value="#{msg.cadastro_cidade_estado}" styleClass="estilo-campo" />
+						<p:selectOneMenu id="estado" value="#{cidadeBean.cidade.estado}" effect="fade" filter="true" filterMatchMode="startsWith" var="e"
+							styleClass="estilo-campo">
+
+							<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+							<f:selectItems value="#{cidadeBean.estados}" var="estado" itemValue="#{estado}" itemLabel="#{estado.nome}" />
+
+							<p:column style="width:10%">
+								<p:graphicImage value="#{cidadeBean.cidade.estado.bandeira}" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="#{e.nome}" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="#{e.sigla}" />
+							</p:column>
+						</p:selectOneMenu>
+						<p:message for="estado" display="icon" />
+						
+						<p:outputLabel for="ddd" value="#{msg.cadastro_cidade_ddd}" styleClass="estilo-campo" />
+						<p:inputText id="ddd" value="#{cidadeBean.cidade.ddd}" styleClass="estilo-campo" />
+						<p:message for="ddd" display="icon" />
+
+						<p:outputLabel for="nome" value="#{msg.cadastro_cidade_nome}" styleClass="estilo-campo" />
+						<p:inputText id="nome" value="#{cidadeBean.cidade.nome}" styleClass="estilo-campo" />
+						<p:message for="nome" display="icon" />
+
+						<p:outputLabel for="bandeira" value="#{msg.cadastro_pais_bandeira}" styleClass="estilo-campo" />
+						<p:fileUpload id="bandeira" mode="simple" label="#{msg.botao_carregar}" value="#{cidadeBean.uploadArquivo}" />
+						<p:commandLink id="visualizarBandeira" process="@this">
+							<p:outputLabel value="#{msg.link_visualizar}" />
+						</p:commandLink>
+						<p:overlayPanel id="ouverlayPanelBandeira" for="visualizarBandeira" hideEffect="fade">
+							<p:graphicImage url="" value="#{cidadeBean.bandeira}" />
+						</p:overlayPanel>
+
+						<f:facet name="footer">
+							<p:commandButton value="#{msg.botao_salvar}" action="#{cidadeBean.salvar}" update=":frmCidade:tabelaCidades :frmCadastroCidade:painelCadastroCidade"
+								oncomplete="painelCadastro(xhr, status, args)" />
+						</f:facet>
+					</h:panelGrid>
+				</p:outputPanel>
+			</h:form>
+		</p:dialog>
+
+		<p:dialog header="#{msg.subtitulo_detalhes}" widgetVar="detalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
+			<p:outputPanel id="cidadeDetalhe" style="text-align:center;">
+				<p:panelGrid columns="2" rendered="#{not empty cidadeBean.cidade}" columnClasses="label,value">
+					<f:facet name="header">
+						<p:graphicImage value="#{cidadeBean.bandeira}" cache="false" />
+					</f:facet>
+
+					<p:outputLabel value="#{msg.cadastro_cidade_codigo}" />
+					<p:outputLabel value="#{cidadeBean.cidade.pk}" />
+
+					<p:outputLabel value="#{msg.cadastro_cidade_estado}" />
+					<p:outputLabel value="#{cidadeBean.cidade.estado.nome} / #{cidadeBean.cidade.estado.sigla}" />
+					
+					<p:outputLabel value="#{msg.cadastro_cidade_ddd}" />
+					<p:outputLabel value="#{cidadeBean.cidade.ddd}" />
+
+					<p:outputLabel value="#{msg.cadastro_cidade_nome}" />
+					<p:outputLabel value="#{cidadeBean.cidade.nome}" />
+				</p:panelGrid>
+			</p:outputPanel>
+		</p:dialog>
+	</ui:define>
+</ui:composition>

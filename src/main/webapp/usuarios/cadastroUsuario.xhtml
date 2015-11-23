@@ -1,0 +1,90 @@
+<ui:composition template="/WEB-INF/templates/layoutPadrao.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="titulo">#{usuarioBean.editando ? msg.subtitulo_cadastro_usuario_edicao : msg.subtitulo_cadastro_usuario_novo}</ui:define>
+
+	<ui:define name="conteudo">
+		<f:metadata>
+			<o:viewParam name="usuario" value="#{usuarioBean.usuario}" />
+			<f:viewAction action="#{usuarioBean.inicializar}" />
+		</f:metadata>
+
+		<h:form id="frmCadastroUsuario">
+
+			<h2>#{usuarioBean.editando ? msg.subtitulo_cadastro_usuario_edicao : msg.subtitulo_cadastro_usuario_novo}</h2>
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button value="#{msg.botao_novo}" outcome="/usuarios/cadastroUsuario" id="botaoNova" />
+					<span class="ui-separator"> <span class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+					<p:commandButton value="#{msg.botao_salvar}" id="botaoSalvar" action="#{usuarioBean.salvar}" update="@(form)" ajax="false" />
+				</f:facet>
+				<f:facet name="right">
+					<p:button value="#{msg.botao_pesquisa}" outcome="/usuarios/pesquisaUsuarios" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panelGrid id="painelCadastroUsuario" columns="3" columnClasses="ui-grid-col-2,ui-grid-col-3,ui-grid-col-1" layout="grid" styleClass="ui-panelgrid-blank">
+
+				<p:outputLabel for="codigo" value="#{msg.cadastro_usuario_codigo}" styleClass="estilo-campo" />
+				<p:inputText id="codigo" value="#{usuarioBean.usuario.pk}" disabled="true" styleClass="estilo-campo" />
+				<p:spacer />
+
+				<p:outputLabel value="#{msg.cadastro_usuario_filial}" for="filial" styleClass="estilo-campo" />
+				<p:inputText id="filial" value="#{usuarioBean.nomeFilial}" styleClass="estilo-campo" readonly="#{usuarioBean.faseRenderizacao}" />
+				<p:commandButton icon="fa fa-search" process="@this" update="@none" action="#{selecaoFilialBean.abrirDialogo}" ignoreAutoUpdate="true">
+					<p:ajax event="dialogReturn" listener="#{usuarioBean.filialSelecionada}" update="filial" ignoreAutoUpdate="true" />
+				</p:commandButton>
+
+				<p:outputLabel for="nome" value="#{msg.cadastro_usuario_nome}" styleClass="estilo-campo" />
+				<p:inputText id="nome" value="#{usuarioBean.usuario.nome}" styleClass="estilo-campo" />
+				<p:message for="nome" display="icon" />
+
+				<p:outputLabel for="departamento" value="#{msg.cadastro_usuario_departamento}" styleClass="estilo-campo" />
+				<p:selectOneMenu id="departamento" value="#{usuarioBean.usuario.departamento}" effect="fade" filter="true" filterMatchMode="startsWith"
+					styleClass="estilo-campo">
+					<f:selectItem itemLabel="#{msg.cadastro_selectitem_vazio}" />
+					<f:selectItems value="#{usuarioBean.departamentos}" var="departamento" itemValue="#{departamento}" itemLabel="#{departamento.nome}" />
+				</p:selectOneMenu>
+				<p:message for="departamento" display="icon" />
+
+				<p:outputLabel for="cargo" value="#{msg.cadastro_usuario_cargo}" styleClass="estilo-campo" />
+				<p:inputText id="cargo" value="#{usuarioBean.usuario.cargo}" styleClass="estilo-campo" />
+				<p:message for="cargo" display="icon" />
+
+				<p:outputLabel for="login" value="#{msg.cadastro_usuario_login}" styleClass="estilo-campo" />
+				<p:inputText id="login" value="#{usuarioBean.usuario.login}" styleClass="estilo-campo" />
+				<p:message for="login" display="icon" />
+
+				<p:outputLabel for="senha" value="#{msg.cadastro_usuario_senha}" styleClass="estilo-campo" />
+				<p:password id="senha" value="#{usuarioBean.senha}" match="senhaConfirma" feedback="true" pweakLabel="#{msg.feedback_senha_fraca}"
+					goodLabel="#{msg.feedback_senha_boa}" strongLabel="#{msg.feedback_senha_forte}" promptLabel="#{msg.feedback_senha_label}" />
+				<p:message for="senha" display="icon" />
+
+				<p:outputLabel for="senhaConfirma" value="#{msg.cadastro_usuario_senha_confirma}" styleClass="estilo-campo" />
+				<p:password id="senhaConfirma" value="#{usuarioBean.senha}" />
+				<p:message for="senhaConfirma" display="icon" />
+
+				<p:outputLabel for="email" value="#{msg.cadastro_usuario_email}" styleClass="estilo-campo" />
+				<p:inputText id="email" value="#{usuarioBean.usuario.email}" styleClass="estilo-campo" />
+				<p:message for="email" display="icon" />
+
+				<p:outputLabel for="situacao" value="#{msg.cadastro_usuario_situacao}" styleClass="estilo-campo" />
+				<p:selectBooleanButton id="situacao" value="#{usuarioBean.usuario.situacao}" onLabel="#{msg.cadastro_usuario_situacao_ativo}"
+					offLabel="#{msg.cadastro_usuario_situacao_inativo}" />
+				<p:message for="situacao" display="icon" />
+
+			</p:panelGrid>
+		</h:form>
+
+		<p:tabView style="margin-top: 10px; background-color: #ffffff; border: 0px;" id="tabViewOpcoes">
+			<p:tab title="#{msg.tabview_cadastro_usuario_tab_perfil}">
+				<ui:include src="/usuarios/perfil.xhtml" />
+			</p:tab>
+			<p:tab title="#{msg.tabview_auditoria}">
+				<ui:include src="/usuarios/auditoriaAuditoria.xhtml" />
+			</p:tab>
+		</p:tabView>
+	</ui:define>
+</ui:composition>
