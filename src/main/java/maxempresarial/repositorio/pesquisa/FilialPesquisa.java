@@ -1,18 +1,19 @@
 package maxempresarial.repositorio.pesquisa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.apache.commons.lang3.StringUtils;
 
 import maxempresarial.modelo.Filial;
 import maxempresarial.repositorio.filtro.FilialFiltro;
@@ -29,48 +30,62 @@ public class FilialPesquisa implements Serializable {
 		this.gerenciadorEntidade = gerenciadorEntidade;
 	}
 
-	public Filial porCnpj(String cnpj) {
-		Session sessaoDoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria resultado = sessaoDoHibernate.createCriteria(Filial.class);
-		try {
-			if (cnpj != null && cnpj.trim().length() > 0) {
-				return (Filial) resultado.add(Restrictions.eq("cnpj", cnpj)).uniqueResult();
-			} else {
-				return null;
-			}
-		} catch (NoResultException nre) {
-			return null;
-		}
-	}
-
-	private Criteria criarCriteriaParaFiltro(FilialFiltro filtro) {
-		Session sessaoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria resultado = sessaoHibernate.createCriteria(Filial.class);
-
-		if (filtro.getNomeFantasia() != null && filtro.getNomeFantasia().trim().length() > 0) {
-			resultado.add(Restrictions.ilike("nomeFantasia", filtro.getNomeFantasia(), MatchMode.ANYWHERE));
-		}
-		return resultado;
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Filial> filtradas(FilialFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
+		From<?, ?> orderByFromEntity = null;
 
-		resultado.setFirstResult(filtro.getPrimeiroRegistro());
-		resultado.setMaxResults(filtro.getQuantidadeDeRegistros());
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Filial> criteriaQuery = builder.createQuery(Filial.class);
 
-		if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.asc(filtro.getPropriedadeParaOrdenacao()));
-		} else if (filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.desc(filtro.getPropriedadeParaOrdenacao()));
+		Root<Filial> filialRoot = criteriaQuery.from(Filial.class);
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, filialRoot);
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		if (filtro.getPropriedadeParaOrdenacao() != null) {
+			String nomePropriedadeOrdenacao = filtro.getPropriedadeParaOrdenacao();
+			orderByFromEntity = filialRoot;
+
+			if (filtro.getPropriedadeParaOrdenacao().contains(".")) {
+				nomePropriedadeOrdenacao = nomePropriedadeOrdenacao.substring(filtro.getPropriedadeParaOrdenacao().indexOf(".") + 1);
+			}
+
+			if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.asc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			} else if (filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.desc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			}
 		}
-		return resultado.setCacheRegion("cacheFilial").list();
+
+		TypedQuery<Filial> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+		query.setFirstResult(filtro.getPrimeiroRegistro());
+		query.setMaxResults(filtro.getQuantidadeDeRegistros());
+
+		return query.getResultList();
 	}
 
 	public int quantidadeFiliaisFiltradas(FilialFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
-		resultado.setProjection(Projections.rowCount());
-		return ((Number) resultado.setCacheable(true).uniqueResult()).intValue();
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+
+		Root<Filial> filialRoot = criteriaQuery.from(Filial.class);
+
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, filialRoot);
+
+		criteriaQuery.select(builder.count(filialRoot));
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		TypedQuery<Long> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+
+		return query.getSingleResult().intValue();
+	}
+
+	private List<Predicate> criarPredicatesParaFiltro(FilialFiltro filtro, Root<Filial> filialRoot) {
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (StringUtils.isNotBlank(filtro.getNomeFantasia())) {
+			predicates.add(builder.like(filialRoot.<String>get("nomeFantasia"), "%" + filtro.getNomeFantasia() + "%"));
+		}
+
+		return predicates;
 	}
 }

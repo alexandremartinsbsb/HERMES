@@ -33,6 +33,8 @@ import maxempresarial.modelo.enumTipo.TipoTelefone;
 import maxempresarial.modelo.enumTipo.TiposSimplesNacional;
 import maxempresarial.modelo.enumTipo.TiposSimplesNacionalIssqn;
 import maxempresarial.repositorio.dao.ExcecaoDAO;
+import maxempresarial.repositorio.filtro.CidadeFiltro;
+import maxempresarial.repositorio.filtro.EstadoFiltro;
 import maxempresarial.repositorio.filtro.PaisFiltro;
 import maxempresarial.repositorio.pesquisa.CidadePesquisa;
 import maxempresarial.repositorio.pesquisa.EstadoPesquisa;
@@ -296,7 +298,9 @@ public class EmpresaBean implements Serializable {
 	public List<Estado> getEstadosEndereco() {
 		this.estadosEndereco.clear();
 		if (this.endereco.getPais() != null) {
-			return estadosEndereco = this.estadoPesquisa.porPais(this.endereco.getPais());
+			EstadoFiltro filtro = new EstadoFiltro();
+			filtro.setPais(this.endereco.getPais());
+			return estadosEndereco = this.estadoPesquisa.filtrados(filtro);
 		}
 		return null;
 	}
@@ -304,7 +308,9 @@ public class EmpresaBean implements Serializable {
 	public List<Cidade> getCidades() {
 		this.cidades.clear();
 		if (this.endereco.getEstado() != null) {
-			return cidades = this.cidadePesquisa.porEstado(this.endereco.getEstado());
+			CidadeFiltro filtro = new CidadeFiltro();
+			filtro.setEstado(this.endereco.getEstado());
+			return cidades = this.cidadePesquisa.filtrados(filtro);
 		}
 		return null;
 	}

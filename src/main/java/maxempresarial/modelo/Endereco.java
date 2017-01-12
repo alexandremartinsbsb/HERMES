@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
-@Table(name = "cadastro_endereco")
+@Table(name = "cadastro_endereco", schema = "desenvolvimento")
 public class Endereco implements Serializable {
 
 	private static final long serialVersionUID = 1L;

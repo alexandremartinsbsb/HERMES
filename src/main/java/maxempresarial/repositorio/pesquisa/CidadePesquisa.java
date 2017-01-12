@@ -1,19 +1,20 @@
 package maxempresarial.repositorio.pesquisa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.apache.commons.lang.StringUtils;
 
 import maxempresarial.modelo.Cidade;
 import maxempresarial.modelo.Estado;
@@ -31,53 +32,86 @@ public class CidadePesquisa implements Serializable {
 		this.gerenciadorEntidade = gerenciadorEntidade;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Cidade> porEstado(Estado estado) {
-		Session sessaoDoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria resultado = sessaoDoHibernate.createCriteria(Cidade.class);
-		try {
-			if (estado != null) {
-				return resultado.add(Restrictions.eq("estado", estado)).list();
-			} else {
-				return null;
-			}
-		} catch (NoResultException nre) {
-			return null;
-		}
+	public int quantidadeCidadesFiltrados(CidadeFiltro filtro) {
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+
+		Root<Cidade> cidadeRoot = criteriaQuery.from(Cidade.class);
+
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, cidadeRoot);
+
+		criteriaQuery.select(builder.count(cidadeRoot));
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		TypedQuery<Long> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+
+		return query.getSingleResult().intValue();
 	}
 
-	private Criteria criarCriteriaParaFiltro(CidadeFiltro filtro) {
-		Session sessaoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria resultado = sessaoHibernate.createCriteria(Cidade.class);
+	public List<Cidade> filtrados(CidadeFiltro filtro) {
+		From<?, ?> orderByFromEntity = null;
+		List<Cidade> listaCidades = new ArrayList<>();
+
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Object[]> criteriaQuery = builder.createQuery(Object[].class);
+
+		Root<Cidade> cidadeRoot = criteriaQuery.from(Cidade.class);
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, cidadeRoot);
+		criteriaQuery.multiselect(
+				cidadeRoot.get("pk"), 
+				cidadeRoot.get("versao"), 
+				cidadeRoot.get("nome"),
+				cidadeRoot.get("ddd"),
+				cidadeRoot.get("estado"));
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		if (filtro.getPropriedadeParaOrdenacao() != null) {
+			String nomePropriedadeOrdenacao = filtro.getPropriedadeParaOrdenacao();
+			orderByFromEntity = cidadeRoot;
+
+			if (filtro.getPropriedadeParaOrdenacao().contains(".")) {
+				nomePropriedadeOrdenacao = nomePropriedadeOrdenacao.substring(filtro.getPropriedadeParaOrdenacao().indexOf(".") + 1);
+			}
+
+			if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.asc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			} else if (filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.desc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			}
+		}
+
+		TypedQuery<Object[]> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+		query.setFirstResult(filtro.getPrimeiroRegistro());
+		query.setMaxResults(filtro.getQuantidadeDeRegistros());
+
+		for (Object obejeto[] : query.getResultList()) {
+			Cidade cidade = new Cidade();
+
+			cidade.setPk((Long) obejeto[0]);
+			cidade.setVersao((Integer) obejeto[1]);
+			cidade.setNome((String) obejeto[2]);
+			cidade.setDdd((String) obejeto[3]);
+			cidade.setEstado((Estado) obejeto[4]);
+
+			listaCidades.add(cidade);
+		}
+
+		return listaCidades;
+	}
+
+	private List<Predicate> criarPredicatesParaFiltro(CidadeFiltro filtro, Root<Cidade> cidadeRoot) {
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		List<Predicate> predicates = new ArrayList<>();
 
 		if (StringUtils.isNotBlank(filtro.getNome())) {
-			resultado.add(Restrictions.ilike("nome", filtro.getNome(), MatchMode.ANYWHERE));
+			predicates.add(builder.like(builder.lower(cidadeRoot.get("nome")), "%" + filtro.getNome().toLowerCase() + "%"));
 		}
 
-		return resultado;
-	}
-
-	public int quantidadeCidadesFiltrados(CidadeFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
-
-		resultado.setProjection(Projections.rowCount());
-
-		return ((Number) resultado.setCacheable(true).uniqueResult()).intValue();
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Cidade> filtrados(CidadeFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
-
-		resultado.setFirstResult(filtro.getPrimeiroRegistro());
-		resultado.setMaxResults(filtro.getQuantidadeDeRegistros());
-
-		if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.asc(filtro.getPropriedadeParaOrdenacao()));
-		} else if (filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.desc(filtro.getPropriedadeParaOrdenacao()));
+		if (filtro.getEstado() != null) {
+			predicates.add(cidadeRoot.get("estado").in(Arrays.asList(filtro.getEstado().getPk())));
 		}
-		return resultado.setCacheable(true).list();
+
+		return predicates;
 	}
 
 }

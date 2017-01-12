@@ -5,12 +5,12 @@
 		<p:commandButton oncomplete="PF('perfilDetalhesDialog').show()" process="@this" value="#{msg.botao_adicionar}" styleClass="botao-adicionar"
 			action="#{usuarioBean.adicionarPerfil}" />
 
-		<p:dataTable id="tabelaPerfil" var="perfil" value="#{usuarioBean.usuario.perfis}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
+		<p:dataTable id="tabelaPerfil" var="perfil" value="#{usuarioBean.perfis}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
 			rows="35" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="20,35,50"
 			paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
 
 			<p:column headerText="#{msg.cadastro_perfil_nome}">
-				<p:outputLabel value="#{perfil.nome}" />
+				<p:outputLabel value="#{perfil.role.descricao}" />
 			</p:column>			
 
 			<p:column styleClass="coluna-duas-opcoes" headerText="#{msg.coluna_opcoes}" exportable="false" id="colunaOpcoes">
@@ -33,7 +33,7 @@
 			<p:button value="#{msg.confirmdialog_botao_nao}" onclick="PF('confirmacaoExclusaoEndereco').hide(); return false;" styleClass="ui-confirmdialog-no"
 				icon="ui-icon-close" />
 			<p:commandButton value="#{msg.confirmdialog_botao_sim}" oncomplete="PF('confirmacaoExclusaoEndereco').hide();"
-				update=":tabViewOpcoes:frmPesquisaEnderecos:tabelaEnderecoEmpresa " action="#{empresaBean.excluirEndereco()}" process="@this" id="yesButton"
+				action="#{empresaBean.excluirEndereco()}" process="@this" id="yesButton"
 				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
 		</h:form>
 	</p:confirmDialog>
@@ -121,7 +121,7 @@
 
 					<f:facet name="footer">
 						<p:commandButton value="#{msg.botao_salvar}" action="#{empresaBean.inserirEndereco()}"
-							update=":tabViewOpcoes:frmPesquisaEnderecos:tabelaEnderecoEmpresa :tabViewOpcoes:frmCadastroEndereco:painelCadastroEnderecoEmpresa"
+							
 							oncomplete="painelCadastroEndereco(xhr, status, args)" />
 					</f:facet>
 				</h:panelGrid>

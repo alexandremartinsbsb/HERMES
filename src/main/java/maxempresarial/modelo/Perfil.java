@@ -10,12 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
 import maxempresarial.modelo.enumTipo.Roles;
 
 @Entity
-@Table(name = "cadastro_perfil")
+@Table(name = "cadastro_perfil", schema = "desenvolvimento")
 public class Perfil implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -23,6 +24,10 @@ public class Perfil implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long pk;
+
+	@Version
+	@Column(name = "perfil_integer_versao")
+	private Integer versao;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "perfil_enum_role")
@@ -38,6 +43,14 @@ public class Perfil implements Serializable {
 
 	public void setPk(Long pk) {
 		this.pk = pk;
+	}
+
+	public Integer getVersao() {
+		return versao;
+	}
+
+	public void setVersao(Integer versao) {
+		this.versao = versao;
 	}
 
 	public Roles getRole() {
@@ -60,7 +73,7 @@ public class Perfil implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((pk == null) ? 0 : pk.hashCode());
 		return result;
 	}
 
@@ -73,7 +86,10 @@ public class Perfil implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Perfil other = (Perfil) obj;
-		if (role != other.role)
+		if (pk == null) {
+			if (other.pk != null)
+				return false;
+		} else if (!pk.equals(other.pk))
 			return false;
 		return true;
 	}

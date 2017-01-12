@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "cadastro_cidade")
+@Table(name = "cadastro_cidade", schema = "desenvolvimento")
 public class Cidade implements Serializable {
 
 	private static final long serialVersionUID = 1L;

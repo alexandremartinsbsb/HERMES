@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Context>
+<Context>
+	<!-- disables storage of sessions across restarts -->
+	<Manager pathname="" />
+	<Resource name="BeanManager" auth="Container" type="javax.enterprise.inject.spi.BeanManager" factory="org.jboss.weld.resources.ManagerObjectFactory" />
+
+	<!-- Datasources (c3p0) -->
+	<Resource name="jdbc/hermesDS" auth="Container" factory="org.apache.naming.factory.BeanFactory" type="com.mchange.v2.c3p0.ComboPooledDataSource" driverClass="org.postgresql.Driver"
+		jdbcUrl="jdbc:postgresql://localhost:5432/hermes?searchpath=desenvolvimento" user="usuario" password="senha" minPoolSize="6" maxPoolSize="25" maxIdleTime="180" maxConnectionAge="10"
+		checkoutTimeout="5000" idleConnectionTestPeriod="60" testConnectionOnCheckout="true" preferredTestQuery="SELECT 1" testConnectionOnCheckin="true" />
+</Context>

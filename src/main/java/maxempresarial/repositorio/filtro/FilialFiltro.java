@@ -7,6 +7,7 @@ public class FilialFiltro implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String nomeFantasia;
+	private String cnpj;
 
 	private int primeiroRegistro;
 	private int quantidadeDeRegistros;
@@ -19,6 +20,14 @@ public class FilialFiltro implements Serializable {
 
 	public void setNomeFantasia(String nomeFantasia) {
 		this.nomeFantasia = nomeFantasia;
+	}
+
+	public String getCnpj() {
+		return cnpj;
+	}
+
+	public void setCnpj(String cnpj) {
+		this.cnpj = cnpj;
 	}
 
 	public int getPrimeiroRegistro() {

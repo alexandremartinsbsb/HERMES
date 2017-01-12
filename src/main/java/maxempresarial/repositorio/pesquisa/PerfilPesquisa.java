@@ -15,34 +15,40 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
-import maxempresarial.modelo.Estado;
-import maxempresarial.repositorio.filtro.EstadoFiltro;
+import maxempresarial.modelo.Perfil;
+import maxempresarial.modelo.enumTipo.Roles;
+import maxempresarial.repositorio.filtro.PerfilFiltro;
 
-public class EstadoPesquisa implements Serializable {
+public class PerfilPesquisa implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private final EntityManager gerenciadorEntidade;
 
 	@Inject
-	public EstadoPesquisa(EntityManager gerenciadorEntidade) {
+	public PerfilPesquisa(EntityManager gerenciadorEntidade) {
 		super();
 		this.gerenciadorEntidade = gerenciadorEntidade;
 	}
 
-	public List<Estado> filtrados(EstadoFiltro filtro) {
+	public List<Perfil> filtrados(PerfilFiltro filtro, String... campos) {
 		From<?, ?> orderByFromEntity = null;
+		List<Perfil> listaPerfil = new ArrayList<>();
 
 		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
-		CriteriaQuery<Estado> criteriaQuery = builder.createQuery(Estado.class);
+		CriteriaQuery<Object[]> criteriaQuery = builder.createQuery(Object[].class);
 
-		Root<Estado> estadoRoot = criteriaQuery.from(Estado.class);
-		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, estadoRoot);
+		Root<Perfil> perfilRoot = criteriaQuery.from(Perfil.class);
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, perfilRoot);
+		criteriaQuery.multiselect(
+				perfilRoot.get("pk"), 
+				perfilRoot.get("versao"), 
+				perfilRoot.get("role"));
 		criteriaQuery.where(predicates.toArray(new Predicate[0]));
 
 		if (filtro.getPropriedadeParaOrdenacao() != null) {
 			String nomePropriedadeOrdenacao = filtro.getPropriedadeParaOrdenacao();
-			orderByFromEntity = estadoRoot;
+			orderByFromEntity = perfilRoot;
 
 			if (filtro.getPropriedadeParaOrdenacao().contains(".")) {
 				nomePropriedadeOrdenacao = nomePropriedadeOrdenacao.substring(filtro.getPropriedadeParaOrdenacao().indexOf(".") + 1);
@@ -55,33 +61,43 @@ public class EstadoPesquisa implements Serializable {
 			}
 		}
 
-		TypedQuery<Estado> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+		TypedQuery<Object[]> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
 		query.setFirstResult(filtro.getPrimeiroRegistro());
 		query.setMaxResults(filtro.getQuantidadeDeRegistros());
 
-		return query.getResultList();
+		for (Object obejeto[] : query.getResultList()) {
+			Perfil perfil = new Perfil();
+
+			perfil.setPk((Long) obejeto[0]);
+			perfil.setVersao((Integer) obejeto[1]);
+			perfil.setRole((Roles) obejeto[2]);
+
+			listaPerfil.add(perfil);
+		}
+
+		return listaPerfil;
 	}
 
-	public int quantidadeEstadosFiltrados(EstadoFiltro filtro) {
+	public int quantidadePerfisFiltrados(PerfilFiltro filtro) {
 
 		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
 		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
 
-		Root<Estado> estadoRoot = criteriaQuery.from(Estado.class);
-		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, estadoRoot);
-		criteriaQuery.select(builder.count(estadoRoot));
+		Root<Perfil> perfilRoot = criteriaQuery.from(Perfil.class);
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, perfilRoot);
+		criteriaQuery.select(builder.count(perfilRoot));
 		criteriaQuery.where(predicates.toArray(new Predicate[0]));
 
 		TypedQuery<Long> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
 		return query.getSingleResult().intValue();
 	}
 
-	private List<Predicate> criarPredicatesParaFiltro(EstadoFiltro filtro, Root<Estado> estadoRoot) {
+	private List<Predicate> criarPredicatesParaFiltro(PerfilFiltro filtro, Root<Perfil> perfilRoot) {
 		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
 		List<Predicate> predicates = new ArrayList<>();
 
-		if (StringUtils.isNotBlank(filtro.getNome())) {
-			predicates.add(builder.like(estadoRoot.<String>get("nome"), "%" + filtro.getNome() + "%"));
+		if (StringUtils.isNotBlank(filtro.getRole())) {
+			predicates.add(builder.like(builder.lower(perfilRoot.<String>get("role")), "%" + filtro.getRole().toLowerCase() + "%"));
 		}
 
 		return predicates;

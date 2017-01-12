@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN">
-	<Properties>
-		<Property name="log-path">logs</Property>
-	</Properties>
+<Configuration>
 	<Appenders>
-		<Console name="console-log" target="SYSTEM_OUT">
-			<PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n" />
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d %-5p [%c] %m%n" />
 		</Console>
-		<RollingFile name="trace-log" fileName="${log-path}/hermes-trace.log" filePattern="${log-path}/data-trace-%d{yyyy-MM-dd}.log">
-			<PatternLayout>
-				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
-			</PatternLayout>
+
+		<RollingFile name="arquivo"
+					 fileName="${sys:catalina.home}/logs/hermes.log"
+					 filePattern="${sys:catalina.home}/logs/hermes-%d{yyyy-MM-dd}-%i.log">
+	
+			<PatternLayout pattern="%d %-5p [%c] %m%n" />
+
 			<Policies>
-				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
-			</Policies>
-		</RollingFile>
-		<RollingFile name="error-log" fileName="${log-path}/hermes-error.log" filePattern="${log-path}/data-info-error-%d{yyyy-MM-dd}.log">
-			<PatternLayout>
-				<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</pattern>
-			</PatternLayout>
-			<Policies>
-				<TimeBasedTriggeringPolicy interval="1" modulate="true" />
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="1 MB" />
 			</Policies>
 		</RollingFile>
 	</Appenders>
+
 	<Loggers>
-		<Root level="info" additivity="true">
-			<AppenderRef ref="console-log" />
+		<Root level="WARN">
+			<AppenderRef ref="console" />
+			<AppenderRef ref="arquivo" />
 		</Root>
 	</Loggers>
 </Configuration>

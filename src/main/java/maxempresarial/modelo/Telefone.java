@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 import maxempresarial.modelo.enumTipo.TipoTelefone;
 
 @Entity
-@Table(name = "cadastro_telefone")
+@Table(name = "cadastro_telefone", schema = "desenvolvimento")
 public class Telefone implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -3,7 +3,7 @@ package maxempresarial.repositorio.filtro;
 import java.io.Serializable;
 
 /**
- * Classe para controlar o filtro quando pesquisar empresa no sistema;
+ * Classe para controlar o filtro quando pesquisar perfil no sistema;
  * 
  * @author Alexandre Martins da Silva
  * 
@@ -11,32 +11,23 @@ import java.io.Serializable;
  * 
  */
 
-public class EmpresaFiltro implements Serializable {
+public class PerfilFiltro implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String nomeFantasia;
-	private String cnpj;
+	private String role;
 
 	private int primeiroRegistro;
 	private int quantidadeDeRegistros;
 	private String propriedadeParaOrdenacao;
 	private boolean ascendente;
 
-	public String getNomeFantasia() {
-		return nomeFantasia;
+	public String getRole() {
+		return role;
 	}
 
-	public void setNomeFantasia(String nomeFantasia) {
-		this.nomeFantasia = nomeFantasia;
-	}
-
-	public String getCnpj() {
-		return cnpj;
-	}
-
-	public void setCnpj(String cnpj) {
-		this.cnpj = cnpj;
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public int getPrimeiroRegistro() {

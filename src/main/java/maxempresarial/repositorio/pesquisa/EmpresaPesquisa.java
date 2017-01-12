@@ -1,19 +1,19 @@
 package maxempresarial.repositorio.pesquisa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 
 import maxempresarial.modelo.Empresa;
 import maxempresarial.repositorio.filtro.EmpresaFiltro;
@@ -39,52 +39,62 @@ public class EmpresaPesquisa implements Serializable {
 		this.gerenciadorEntidade = gerenciadorEntidade;
 	}
 
-	public Empresa porCnpj(String cnpj) {
-		Session sessaoDoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria resultado = sessaoDoHibernate.createCriteria(Empresa.class);
-		try {
-			if (StringUtils.isNotBlank(cnpj)) {
-				return (Empresa) resultado.add(Restrictions.eq("cnpj", cnpj)).uniqueResult();
-			} else {
-				return null;
-			}
-		} catch (NoResultException nre) {
-			return null;
-		}
-	}
-
-	private Criteria criarCriteriaParaFiltro(EmpresaFiltro filtro) {
-		Session sessaoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria resultado = sessaoHibernate.createCriteria(Empresa.class);
-
-		if (StringUtils.isNotBlank(filtro.getNomeFantasia())) {
-			resultado.add(Restrictions.ilike("nomeFantasia", filtro.getNomeFantasia(), MatchMode.ANYWHERE));
-		}
-
-		return resultado;
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Empresa> filtradas(EmpresaFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
+		From<?, ?> orderByFromEntity = null;
 
-		resultado.setFirstResult(filtro.getPrimeiroRegistro());
-		resultado.setMaxResults(filtro.getQuantidadeDeRegistros());
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Empresa> criteriaQuery = builder.createQuery(Empresa.class);
 
-		if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.asc(filtro.getPropriedadeParaOrdenacao()));
-		} else if (filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.desc(filtro.getPropriedadeParaOrdenacao()));
+		Root<Empresa> empresaRoot = criteriaQuery.from(Empresa.class);
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, empresaRoot);
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		if (filtro.getPropriedadeParaOrdenacao() != null) {
+			String nomePropriedadeOrdenacao = filtro.getPropriedadeParaOrdenacao();
+			orderByFromEntity = empresaRoot;
+
+			if (filtro.getPropriedadeParaOrdenacao().contains(".")) {
+				nomePropriedadeOrdenacao = nomePropriedadeOrdenacao.substring(filtro.getPropriedadeParaOrdenacao().indexOf(".") + 1);
+			}
+
+			if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.asc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			} else if (filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.desc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			}
 		}
 
-		return resultado.setCacheRegion("cacheEmpresa").list();
+		TypedQuery<Empresa> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+		query.setFirstResult(filtro.getPrimeiroRegistro());
+		query.setMaxResults(filtro.getQuantidadeDeRegistros());
+
+		return query.getResultList();
 	}
 
 	public int quantidadeEmpresasFiltradas(EmpresaFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
 
-		resultado.setProjection(Projections.rowCount());
+		Root<Empresa> empresaRoot = criteriaQuery.from(Empresa.class);
 
-		return ((Number) resultado.setCacheable(true).uniqueResult()).intValue();
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, empresaRoot);
+
+		criteriaQuery.select(builder.count(empresaRoot));
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		TypedQuery<Long> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+
+		return query.getSingleResult().intValue();
+	}
+
+	private List<Predicate> criarPredicatesParaFiltro(EmpresaFiltro filtro, Root<Empresa> empresaRoot) {
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (StringUtils.isNotBlank(filtro.getNomeFantasia())) {
+			predicates.add(builder.like(empresaRoot.<String>get("nomeFantasia"), "%" + filtro.getNomeFantasia() + "%"));
+		}
+
+		return predicates;
 	}
 }

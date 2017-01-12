@@ -30,7 +30,7 @@ import maxempresarial.modelo.enumTipo.TiposSimplesNacional;
 import maxempresarial.modelo.enumTipo.TiposSimplesNacionalIssqn;
 
 @Entity
-@Table(name = "cadastro_filial")
+@Table(name = "cadastro_filial", schema = "desenvolvimento")
 public class Filial implements Serializable {
 
 	private static final long serialVersionUID = 1L;

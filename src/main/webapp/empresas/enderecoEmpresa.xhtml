@@ -5,8 +5,8 @@
 		<p:commandButton oncomplete="PF('enderecoDetalhesDialog').show()" process="@this" value="#{msg.botao_adicionar}" styleClass="botao-adicionar"
 			action="#{empresaBean.adicionarEndereco}" />
 
-		<p:dataTable id="tabelaEnderecoEmpresa" var="enderecoEmpresa" value="#{empresaBean.empresa.enderecos}" reflow="true" emptyMessage="#{msg.datatable_pesquisa_menssagem}"
-			rows="35" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="20,35,50"
+		<p:dataTable id="tabelaEnderecoEmpresa" var="enderecoEmpresa" value="#{empresaBean.empresa.enderecos}" reflow="true"
+			emptyMessage="#{msg.datatable_pesquisa_menssagem}" rows="35" paginator="true" paginatorPosition="bottom" rowsPerPageTemplate="20,35,50"
 			paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}">
 
 			<p:column headerText="#{msg.endereco_cep}" style="width: 100px;">
@@ -38,8 +38,8 @@
 			</p:column>
 
 			<p:column styleClass="coluna-duas-opcoes" headerText="#{msg.coluna_opcoes}" exportable="false" id="colunaOpcoes">
-				<p:commandButton update=":tabViewOpcoes:frmCadastroEndereco:painelCadastroEnderecoEmpresa" oncomplete="PF('enderecoDetalhesDialog').show()"
-					process="@this" icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;" id="btnDetalhes">
+				<p:commandButton update=":tabViewOpcoes:frmCadastroEndereco:painelCadastroEnderecoEmpresa" oncomplete="PF('enderecoDetalhesDialog').show()" process="@this"
+					icon="ui-icon-pencil" title="#{msg.botao_editar}" style="width: 30px;" id="btnDetalhes">
 					<f:setPropertyActionListener target="#{empresaBean.endereco}" value="#{enderecoEmpresa}" />
 				</p:commandButton>
 
@@ -62,8 +62,7 @@
 		</h:form>
 	</p:confirmDialog>
 
-	<p:dialog header="#{msg.subtitulo_pesquisa_endereco}" widgetVar="enderecoDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop"
-		resizable="false">
+	<p:dialog header="#{msg.subtitulo_pesquisa_endereco}" widgetVar="enderecoDetalhesDialog" modal="true" showEffect="drop" hideEffect="drop" resizable="false">
 		<h:form id="frmCadastroEndereco">
 			<p:outputPanel id="painelCadastroEnderecoEmpresa">
 				<h:panelGrid columns="3" cellpadding="5">

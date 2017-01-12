@@ -11,53 +11,48 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Hibernate EHCache API -->
-		<hibernate-ehcache.version>5.0.2.Final</hibernate-ehcache.version>
+		<hibernate-ehcache.version>5.2.5.Final</hibernate-ehcache.version>
 
 		<!-- Ehcache -->
 		<ehcache-core.version>2.6.11</ehcache-core.version>
 
 		<!-- Upload de arquivos -->
-		<commons-fileupload.version>1.3.1</commons-fileupload.version>
+		<commons-fileupload.version>1.3.2</commons-fileupload.version>
 
 		<!-- DBUnit -->
-		<dbunit.version>2.5.1</dbunit.version>
+		<dbunit.version>2.5.3</dbunit.version>
 
 		<!-- Junit4 para TDD -->
 		<junit.version>4.12</junit.version>
-		<cdi-api.version>2.0-EDR1</cdi-api.version>
+		<cdi-api.version>2.0-EDR2</cdi-api.version>
 
 		<!-- PrimeFaces (biblioteca de componentes) -->
-		<primefaces.version>5.2</primefaces.version>
+		<primefaces.version>6.0</primefaces.version>
 
 		<!-- Temas do PrimeFaces -->
 		<primefaces-extensions-all-themes.version>1.0.8</primefaces-extensions-all-themes.version>
 
 		<!-- Usado para exportação de arquivos Excel -->
-		<apache-poi.version>3.13</apache-poi.version>
+		<apache-poi.version>3.15</apache-poi.version>
 
 		<!-- Implementacao do Bean Validation -->
-		<hibernate-validator.version>5.2.2.Final</hibernate-validator.version>
+		<hibernate-validator.version>5.3.4.Final</hibernate-validator.version>
 
 		<!-- Nucleo do Hibernate -->
-		<hibernate-core.version>5.0.2.Final</hibernate-core.version>
-
-		<!-- Implementacao de EntityManager do JPA -->
-		<hibernate-entitymanager.version>5.0.2.Final</hibernate-entitymanager.version>
+		<hibernate-core.version>5.2.5.Final</hibernate-core.version>
 
 		<!-- Weld (implementação do CDI) -->
-		<weld-servlet.version>2.3.1.Final</weld-servlet.version>
-		<weld-core-jsf.version>2.3.1.Final</weld-core-jsf.version>
-		<weld-core.version>2.3.1.Final</weld-core.version>
-		<weld-se.version>2.3.1.Final</weld-se.version>
-		<weld-se-core.version>2.3.1.Final</weld-se-core.version>
+		<weld-servlet.version>2.3.5.Final</weld-servlet.version>
+		<weld-core-jsf.version>2.3.5.Final</weld-core-jsf.version>
+		<weld-core.version>2.3.5.Final</weld-core.version>
+		<weld-se.version>2.3.5.Final</weld-se.version>
+		<weld-se-core.version>2.3.5.Final</weld-se-core.version>
 
 		<!-- Weld depende do Jandex -->
 		<jandex.version>2.0.0.Final</jandex.version>
 
 		<!-- Omnifaces (utilitario para JSF) -->
-		<omnifaces.version>2.1</omnifaces.version>
-
-		<!-- Slf4j (Necessário para o DBUnit) -->
+		<omnifaces.version>2.5.1</omnifaces.version>
 
 		<!-- Jintegrity -->
 		<jintegrity.version>0.1.2</jintegrity.version>
@@ -73,7 +68,7 @@
 		<commons-lang3.version>3.4</commons-lang3.version>
 
 		<!-- Abstração para envio de e-mails (Github - offline) -->
-		<simple-email.version>0.2.1</simple-email.version>
+		<simple-email.version>0.2.5-SNAPSHOT</simple-email.version>
 
 		<!-- Requirido para envio de e-mail -->
 		<mail.version>1.4.7</mail.version>
@@ -96,7 +91,7 @@
 		<!-- Mojarra (implementacao do JSF) -->
 		<javax-faces.version>2.2.12</javax-faces.version>
 		<hibernate-jpamodelgen.version>5.0.2.Final</hibernate-jpamodelgen.version>
-		<weld-core-impl.version>2.3.0.Final</weld-core-impl.version>
+		<weld-core-impl.version>2.3.5.Final</weld-core-impl.version>
 		<javaee-web-api.version>7.0</javaee-web-api.version>
 
 	</properties>
@@ -160,12 +155,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate-core.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>${hibernate-entitymanager.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -318,7 +307,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.6.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>

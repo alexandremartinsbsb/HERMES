@@ -1,19 +1,19 @@
 package maxempresarial.repositorio.pesquisa;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 
 import maxempresarial.modelo.Usuario;
 import maxempresarial.repositorio.filtro.UsuarioFiltro;
@@ -30,67 +30,62 @@ public class UsuarioPesquisa implements Serializable {
 		this.gerenciadorEntidade = gerenciadorEntidade;
 	}
 
-	public Usuario porEmail(String email) {
-		Session sessaoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria criteria = sessaoHibernate.createCriteria(Usuario.class);
-		try {
-			if (StringUtils.isNotBlank(email)) {
-				return (Usuario) criteria.add(Restrictions.eq("email", email));
-			} else {
-				return null;
-			}
-		} catch (NoResultException nre) {
-			return null;
-		}
-
-	}
-
-	public Usuario porLogin(String login) {
-		Usuario usuario = null;
-		try {
-			usuario = this.gerenciadorEntidade.createQuery("from Usuario where lower(login) = :login", Usuario.class).setParameter("login", login.toLowerCase()).getSingleResult();
-		} catch (NoResultException e) {
-			// nenhum usuário encontrado com o e-mail informado
-		}
-		return usuario;
-	}
-
-	private Criteria criarCriteriaParaFiltro(UsuarioFiltro filtro) {
-		Session sessaoHibernate = this.gerenciadorEntidade.unwrap(Session.class);
-		Criteria criteria = sessaoHibernate.createCriteria(Usuario.class);
-
-		if (StringUtils.isNotBlank(filtro.getNome())) {
-			criteria.add(Restrictions.ilike("nome", filtro.getNome(), MatchMode.ANYWHERE));
-		}
-
-		if (StringUtils.isNotBlank(filtro.getEmail())) {
-			criteria.add(Restrictions.eq("email", filtro.getEmail()));
-		}
-		return criteria;
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Usuario> filtrados(UsuarioFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
+		From<?, ?> orderByFromEntity = null;
 
-		resultado.setFirstResult(filtro.getPrimeiroRegistro());
-		resultado.setMaxResults(filtro.getQuantidadeDeRegistros());
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Usuario> criteriaQuery = builder.createQuery(Usuario.class);
 
-		if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.asc(filtro.getPropriedadeParaOrdenacao()));
-		} else if (filtro.getPropriedadeParaOrdenacao() != null) {
-			resultado.addOrder(Order.desc(filtro.getPropriedadeParaOrdenacao()));
+		Root<Usuario> usuarioRoot = criteriaQuery.from(Usuario.class);
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, usuarioRoot);
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		if (filtro.getPropriedadeParaOrdenacao() != null) {
+			String nomePropriedadeOrdenacao = filtro.getPropriedadeParaOrdenacao();
+			orderByFromEntity = usuarioRoot;
+
+			if (filtro.getPropriedadeParaOrdenacao().contains(".")) {
+				nomePropriedadeOrdenacao = nomePropriedadeOrdenacao.substring(filtro.getPropriedadeParaOrdenacao().indexOf(".") + 1);
+			}
+
+			if (filtro.isAscendente() && filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.asc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			} else if (filtro.getPropriedadeParaOrdenacao() != null) {
+				criteriaQuery.orderBy(builder.desc(orderByFromEntity.get(nomePropriedadeOrdenacao)));
+			}
 		}
 
-		return resultado.list();
+		TypedQuery<Usuario> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+		query.setFirstResult(filtro.getPrimeiroRegistro());
+		query.setMaxResults(filtro.getQuantidadeDeRegistros());
 
+		return query.getResultList();
 	}
 
 	public int quantidadeUsuariosFiltrados(UsuarioFiltro filtro) {
-		Criteria resultado = this.criarCriteriaParaFiltro(filtro);
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
 
-		resultado.setProjection(Projections.rowCount());
+		Root<Usuario> usuarioRoot = criteriaQuery.from(Usuario.class);
 
-		return ((Number) resultado.uniqueResult()).intValue();
+		List<Predicate> predicates = criarPredicatesParaFiltro(filtro, usuarioRoot);
+
+		criteriaQuery.select(builder.count(usuarioRoot));
+		criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
+		TypedQuery<Long> query = this.gerenciadorEntidade.createQuery(criteriaQuery);
+
+		return query.getSingleResult().intValue();
+	}
+
+	private List<Predicate> criarPredicatesParaFiltro(UsuarioFiltro filtro, Root<Usuario> usuarioRoot) {
+		CriteriaBuilder builder = this.gerenciadorEntidade.getCriteriaBuilder();
+		List<Predicate> predicates = new ArrayList<>();
+
+		if (StringUtils.isNotBlank(filtro.getNome())) {
+			predicates.add(builder.like(usuarioRoot.<String>get("nome"), "%" + filtro.getNome() + "%"));
+		}
+
+		return predicates;
 	}
 }

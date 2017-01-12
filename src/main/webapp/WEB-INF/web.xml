@@ -35,7 +35,7 @@
 	<!-- Theme do PrimeFaces -->
 	<context-param>
 		<param-name>primefaces.THEME</param-name>
-		<param-value>rocket</param-value>
+		<param-value>hot-sneaks</param-value>
 	</context-param>
 
 	<!-- Validacao para o lado do cliente -->

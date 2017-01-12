@@ -18,6 +18,7 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.primefaces.context.RequestContext;
@@ -125,7 +126,7 @@ public class CidadeBean implements Serializable {
 
 		estiloDaCelula.setFont(fonteDoCabecalho);
 		estiloDaCelula.setFillForegroundColor(IndexedColors.BLACK.getIndex());
-		estiloDaCelula.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		estiloDaCelula.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
 		for (int i = 0; i < cabecalho.getPhysicalNumberOfCells(); i++) {
 			cabecalho.getCell(i).setCellStyle(estiloDaCelula);

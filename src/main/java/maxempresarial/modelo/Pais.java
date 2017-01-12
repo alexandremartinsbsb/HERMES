@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "cadastro_pais")
+@Table(name = "cadastro_pais", schema = "desenvolvimento")
 public class Pais implements Serializable {
 
 	private static final long serialVersionUID = 1L;

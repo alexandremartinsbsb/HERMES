@@ -15,10 +15,13 @@ import org.primefaces.event.SelectEvent;
 
 import maxempresarial.modelo.Departamento;
 import maxempresarial.modelo.Filial;
+import maxempresarial.modelo.Perfil;
 import maxempresarial.modelo.Usuario;
 import maxempresarial.repositorio.dao.ExcecaoDAO;
 import maxempresarial.repositorio.filtro.DepartamentoFiltro;
+import maxempresarial.repositorio.filtro.PerfilFiltro;
 import maxempresarial.repositorio.pesquisa.DepartamentoPesquisa;
+import maxempresarial.repositorio.pesquisa.PerfilPesquisa;
 import maxempresarial.servico.ExcecaoRN;
 import maxempresarial.servico.UsuarioServico;
 import maxempresarial.util.jsf.FacesUtil;
@@ -31,13 +34,15 @@ public class UsuarioBean implements Serializable {
 
 	@Inject
 	private UsuarioServico usuarioServico;
-
 	@Inject
 	private DepartamentoPesquisa departamentoPesquisa;
+	@Inject
+	private PerfilPesquisa perfilPesquisa;
 
 	private String senha;
 	private Usuario usuario;
 	private List<Departamento> departamentos = new ArrayList<>();
+	private List<Perfil> perfis = new ArrayList<>();
 
 	public UsuarioBean() {
 		this.limpar();
@@ -49,6 +54,7 @@ public class UsuarioBean implements Serializable {
 			this.limpar();
 		}
 		this.departamentos = this.departamentoPesquisa.filtrados(new DepartamentoFiltro());
+		this.perfis = this.perfilPesquisa.filtrados(new PerfilFiltro());
 	}
 
 	private void limpar() {
@@ -73,6 +79,10 @@ public class UsuarioBean implements Serializable {
 		}
 	}
 
+	public void adicionarPerfil() {
+
+	}
+
 	public String getSenha() {
 		return senha;
 	}
@@ -95,6 +105,10 @@ public class UsuarioBean implements Serializable {
 
 	public List<Departamento> getDepartamentos() {
 		return departamentos;
+	}
+
+	public List<Perfil> getPerfis() {
+		return perfis;
 	}
 
 	public boolean isEditando() {

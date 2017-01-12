@@ -2,6 +2,8 @@ package maxempresarial.repositorio.filtro;
 
 import java.io.Serializable;
 
+import maxempresarial.modelo.Estado;
+
 /**
  * Classe para controlar o filtro quando pesquisar empresa no sistema;
  * 
@@ -16,6 +18,7 @@ public class CidadeFiltro implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String nome;
+	private Estado estado;
 
 	private int primeiroRegistro;
 	private int quantidadeDeRegistros;
@@ -28,6 +31,14 @@ public class CidadeFiltro implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public Estado getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Estado estado) {
+		this.estado = estado;
 	}
 
 	public int getPrimeiroRegistro() {

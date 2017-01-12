@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 
 @Entity
-@Table(name = "cadastro_usuario")
+@Table(name = "cadastro_usuario", schema = "desenvolvimento")
 public class Usuario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -77,7 +77,7 @@ public class Usuario implements Serializable {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "perfil_usuario", joinColumns = { @JoinColumn(name = "pk_usuario", referencedColumnName = "pk") }, inverseJoinColumns = {
 			@JoinColumn(name = "pk_perfil", referencedColumnName = "pk") })
-	private List<Perfil> enderecos = new ArrayList<>();
+	private List<Perfil> perfis = new ArrayList<>();
 
 	public Long getPk() {
 		return pk;
@@ -168,11 +168,11 @@ public class Usuario implements Serializable {
 	}
 
 	public List<Perfil> getEnderecos() {
-		return enderecos;
+		return perfis;
 	}
 
 	public void setEnderecos(List<Perfil> enderecos) {
-		this.enderecos = enderecos;
+		this.perfis = enderecos;
 	}
 
 	@Override

@@ -40,7 +40,7 @@ import maxempresarial.modelo.enumTipo.TiposSimplesNacionalIssqn;
  */
 
 @Entity
-@Table(name = "cadastro_empresa")
+@Table(name = "cadastro_empresa", schema = "desenvolvimento")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Empresa implements Serializable {
 

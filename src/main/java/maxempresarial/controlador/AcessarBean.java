@@ -22,26 +22,31 @@ public class AcessarBean implements Serializable {
 
 	@Inject
 	private FacesContext contexto;
-
 	@Inject
 	private HttpServletRequest requisicao;
-
 	@Inject
 	private HttpServletResponse resposta;
 
 	private String login;
+	private String senha;
 
 	public void inicializar() {
+
 		if ("true".equals(this.requisicao.getParameter("invalid"))) {
 			FacesUtil.mensagemAviso("ATENÇÃO!", "Login ou Senha inválida.");
 		}
 	}
 
 	public void acessar() throws ServletException, IOException {
+
 		RequestDispatcher dispatcher = this.requisicao.getRequestDispatcher("/j_spring_security_check");
 		dispatcher.forward(this.requisicao, this.resposta);
 
 		this.contexto.responseComplete();
+	}
+
+	public void sair(){
+		
 	}
 
 	public String getLogin() {
@@ -50,6 +55,14 @@ public class AcessarBean implements Serializable {
 
 	public void setLogin(String login) {
 		this.login = login;
+	}
+
+	public String getSenha() {
+		return senha;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
 	}
 
 }
