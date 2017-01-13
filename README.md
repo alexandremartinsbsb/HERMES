@@ -22,4 +22,4 @@ Instalação
 Constribuição
 ------------
 
-Consulte nossas documentações antes de relatar um problema.
+Consulte nossas documentações antes de relatar algum problema.
